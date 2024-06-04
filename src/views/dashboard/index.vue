@@ -15,10 +15,6 @@ export default {
       'name'
     ])
   },
-  created() {
-    // 初始化执行
-    this.$store.dispatch('user/getUserInfo')
-  }
 }
 </script>
 
