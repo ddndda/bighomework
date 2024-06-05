@@ -2,7 +2,7 @@
   <div class="container">
     <div class="app-container">
       <!-- 展示树形结构 -->
-      <el-tree :default-expand-all="false" :data="depts" :props="defaultProps">
+      <el-tree :default-expand-all="true" :data="depts" :props="defaultProps">
         <!-- 节点结构 -->
         <!-- v-slot="{ node, data }" 只能作用在template -->
         <template v-slot="{ data }">
@@ -31,6 +31,7 @@
 </template>
 <script>
 import { getDepartment } from '@/api/department'
+import { transListToTreeData } from '@/utils'
 export default {
   name: 'Department',
   data() {
@@ -49,7 +50,7 @@ export default {
     // 封装好方法
     async getDepartment() {
       const result = await getDepartment()
-      this.depts = result
+      this.depts = transListToTreeData(result, 0)
     }
   }
 }
