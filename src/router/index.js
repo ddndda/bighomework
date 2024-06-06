@@ -5,14 +5,14 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import departmentRouter from './moduels/department'
-import approvalRouter from './moduels/approval'
-import attendanceRouter from './moduels/attendance'
-import employeeRouter from './moduels/employee'
-import permissionRouter from './moduels/permission'
-import roleRouter from './moduels/role'
-import salaryRouter from './moduels/salary'
-import socialRouter from './moduels/social'
+import departmentRouter from './modules/department'
+import approvalRouter from './modules/approval'
+import attendanceRouter from './modules/attendance'
+import employeeRouter from './modules/employee'
+import permissionRouter from './modules/permission'
+import roleRouter from './modules/role'
+import salaryRouter from './modules/salary'
+import socialRouter from './modules/social'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1

@@ -7,7 +7,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <!-- 头像·-->
+          <!-- 头像 -->
           <img v-if="avatar" :src="avatar" class="user-avatar">
           <span v-else class="username">{{ name?.charAt(0) }}</span>
           <!-- 用户名称 -->
@@ -21,7 +21,7 @@
               首页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/ddndda/bighomework">
+          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <!-- prevent阻止默认事件 -->
@@ -37,8 +37,8 @@
       </el-dropdown>
     </div>
     <!-- 放置dialog -->
-    <!-- sync- 可以接受子组件传过来的事件和值 -->
-    <el-dialog width="500px" title="修改密码" :visible.sync="showDialog" :modal-append-to-body="false" @close="btnCancel">
+    <!-- sync- 可以接收子组件传过来的事件和值 -->
+    <el-dialog width="500px" title="修改密码" :visible.sync="showDialog" @close="btnCancel">
       <!-- 放置表单 -->
       <el-form ref="passForm" label-width="120px" :model="passForm" :rules="rules">
         <el-form-item label="旧密码" prop="oldPassword">
@@ -203,18 +203,18 @@ export default {
         display: flex;
         align-items: center;
         .name {
-          // 用户名称距离右侧距离
+          //  用户名称距离右侧距离
           margin-right: 10px;
           font-size: 16px;
         }
         .username {
           width: 30px;
           height: 30px;
-          line-height: 30px;
           text-align: center;
-          background-color: #04c9be;
-          color: #fff;
+          line-height: 30px;
           border-radius: 50%;
+          background: #04c9be;
+          color: #fff;
           margin-right: 4px;
         }
         .el-icon-setting {

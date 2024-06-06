@@ -2,6 +2,7 @@ import router from '@/router'
 import nprogress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from '@/store'
+
 /**
  *前置守卫
  *
@@ -29,15 +30,15 @@ router.beforeEach(async(to, from, next) => {
     if (whiteList.includes(to.path)) {
       next()
     } else {
-      next('/login') // 中转到登陆页
+      next('/login') // 中转到登录页
       nprogress.done()
     }
   }
 })
 
-/**
+/** *
  * 后置守卫
- */
+ * **/
 router.afterEach(() => {
   console.log('123')
   nprogress.done()

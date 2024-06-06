@@ -9,6 +9,8 @@ const service = axios.create({
 // 成功1 失败2
 service.interceptors.request.use((config) => {
   // 注入token
+//  this.$store.getters
+  // store.getters.token => 请求头里面
   if (store.getters.token) {
     config.headers.Authorization = `Bearer ${store.getters.token}`
   }
@@ -32,8 +34,8 @@ service.interceptors.response.use((response) => {
   if (error.response.status === 401) {
     Message({ type: 'warning', message: 'token超时了' })
     // 说明token超时了
-    await store.dispatch('user/logout') // 调用action，退出登录
-    // 主动跳转到登录页
+    await store.dispatch('user/logout') // 调用action 退出登录
+    //  主动跳到登录页
     router.push('/login') // 跳转到登录页
     return Promise.reject(error)
   }

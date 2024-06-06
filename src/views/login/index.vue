@@ -19,7 +19,7 @@
             </el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-button style="width: 350px;" type="primary" @click="login">登陆</el-button>
+            <el-button style="width:350px" type="primary" @click="login">登录</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -33,7 +33,7 @@ export default {
     return {
       loginForm: {
         mobile: process.env.NODE_ENV === 'development' ? '13800000002' : '',
-        password: process.env.NODE_ENV === 'development' ? 'hm#qd@23!' : '',
+        password: process.env.NODE_ENV === 'development' ? '123456' : '',
         isAgree: process.env.NODE_ENV === 'development'
       },
       loginRules: {
@@ -45,6 +45,7 @@ export default {
           pattern: /^1[3-9]\d{9}$/,
           message: '手机号格式不正确',
           trigger: 'blur'
+
         }],
         password: [{
           required: true,
@@ -55,6 +56,7 @@ export default {
           max: 16,
           message: '密码长度应该为6-16位之间',
           trigger: 'blur'
+
         }],
         // required只能检测 null undefined ""
         isAgree: [{
@@ -80,6 +82,7 @@ export default {
         }
       })
     }
+
   }
 }
 </script>

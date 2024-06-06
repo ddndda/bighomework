@@ -30,7 +30,7 @@
   </el-dialog>
 </template>
 <script>
-import { getDepartment, getManagerList, addDepartment } from '@/api/department'
+import { getDepartmentDetail, getDepartment, getManagerList, addDepartment } from '@/api/department'
 export default {
   props: {
     showDialog: {
@@ -106,8 +106,7 @@ export default {
       this.$emit('update:showDialog', false)
     },
     async getManagerList() {
-      const result = await getManagerList()
-      this.managerList = result
+      this.managerList = await getManagerList()
     },
     // 点击确定时调用
     btnOK() {
@@ -121,8 +120,11 @@ export default {
           this.close()
         }
       })
+    },
+    // 获取组织的详情
+    async getDepartmentDetail() {
+      this.formData = await getDepartmentDetail(this.currentNodeId)
     }
   }
 }
 </script>
-

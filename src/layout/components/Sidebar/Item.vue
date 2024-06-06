@@ -13,9 +13,10 @@ export default {
     }
   },
   render(h, context) {
+    // 图标 和标题
     const { icon, title } = context.props
     const vnodes = []
-
+    // 渲染图标
     if (icon) {
       if (icon.includes('el-icon')) {
         vnodes.push(<i class={[icon, 'sub-el-icon']} />)
@@ -23,11 +24,11 @@ export default {
         vnodes.push(<svg-icon icon-class={icon}/>)
       }
     }
-
+    // 渲染标题
     if (title) {
       vnodes.push(<span slot='title'>{(title)}</span>)
     }
-    return vnodes // 渲染节点
+    return vnodes
   }
 }
 </script>

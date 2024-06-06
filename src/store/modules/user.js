@@ -25,7 +25,7 @@ const actions = {
   // context上下文，传入参数
   async login(context, data) {
     console.log(data)
-    // todo: 调用登陆接口
+    // todo: 调用登录接口
     const token = await login(data)
     // 返回一个token 123456
     context.commit('setToken', token)
