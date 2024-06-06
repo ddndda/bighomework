@@ -30,7 +30,7 @@
   </el-dialog>
 </template>
 <script>
-import { getDepartment, getManagerList } from '@/api/department'
+import { getDepartment, getManagerList, addDepartment } from '@/api/department'
 export default {
   props: {
     showDialog: {
@@ -102,11 +102,25 @@ export default {
   methods: {
     close() {
       // 修改父组件的值 子传父
+      this.$refs.addDept.resetFields() // 重置表单
       this.$emit('update:showDialog', false)
     },
     async getManagerList() {
       const result = await getManagerList()
       this.managerList = result
+    },
+    // 点击确定时调用
+    btnOK() {
+      this.$refs.addDept.validate(async isOK => {
+        if (isOK) {
+          await addDepartment({ ...this.formData, pid: this.currentNodeId })
+          // 通知父组件更新
+          this.$emit('updateDepartment')
+          // 提示消息
+          this.$message.success('新增部门成功')
+          this.close()
+        }
+      })
     }
   }
 }
