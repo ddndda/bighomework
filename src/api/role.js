@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-/**
+/** *
  * 获取角色列表
  * **/
 export function getRoleList(params) {
@@ -10,9 +10,10 @@ export function getRoleList(params) {
   })
 }
 
-/**
+/** **
  * 新增角色
- * **/
+ * ***/
+
 export function addRole(data) {
   return request({
     url: '/sys/role',
