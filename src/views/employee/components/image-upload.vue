@@ -46,8 +46,8 @@ export default {
         SecretKey: ''
       }) // 完成cos对象的初始化
       cos.putObject({
-        Bucket: 'bighomework-1327166376', // 存储桶名称
-        Region: 'ap-beijing', // 地域名称
+        Bucket: '', // 存储桶名称
+        Region: '', // 地域名称
         Key: params.file.name, // 文件名称
         StorageClass: 'STANDARD', // 固定值
         Body: params.file // 文件对象
