@@ -8,13 +8,13 @@
             <!--登录表单-->
             <el-form ref="form" :model="loginForm" :rules="loginRules">
               <el-form-item prop="mobile">
-                <el-input v-model="loginForm.mobile" placeholder="请输入手机号" />
+                <el-input v-model="loginForm.mobile" placeholder="Enter your phone number" />
               </el-form-item>
               <el-form-item prop="password">
-                <el-input v-model="loginForm.password" show-password placeholder="请输入密码" />
+                <el-input v-model="loginForm.password" show-password placeholder="Enter your password" />
               </el-form-item>
               <el-form-item prop="isAgree">
-                <el-checkbox v-model="loginForm.isAgree" style="color:black">
+                <el-checkbox v-model="loginForm.isAgree" style="color:white">
                   User Platform Service Agreement
                 </el-checkbox>
               </el-form-item>
@@ -44,11 +44,11 @@ export default {
       loginRules: {
         mobile: [{
           required: true,
-          message: 'Please enter your mobile phone number',
+          message: 'Please enter your phone number',
           trigger: 'blur'
         }, {
           pattern: /^1[3-9]\d{9}$/,
-          message: 'The format of the mobile phone number is incorrect',
+          message: 'The format of the phone number is incorrect',
           trigger: 'blur'
         }],
         password: [{

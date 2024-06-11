@@ -3,33 +3,33 @@
     <div class="app-container">
       <!-- 角色管理内容 -->
       <div class="role-operate">
-        <el-button size="mini" type="primary" @click="showDialog = true">添加角色</el-button>
+        <el-button size="mini" type="primary" class="add-button" @click="showDialog = true">添加角色</el-button>
       </div>
       <!-- 放置table组件 -->
-      <el-table :data="list">
+      <el-table :data="list" class="list" header-cell-style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D" cell-style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D">
         <!-- 放置列 -->
-        <el-table-column prop="name" align="center" width="200" label="角色">
+        <el-table-column prop="name" align="center" width="200" label="角色" class="list-title">
           <template v-slot="{ row }">
             <!-- 条件判断 -->
-            <el-input v-if="row.isEdit" v-model="row.editRow.name" size="mini" />
-            <span v-else>{{ row.name }}</span>
+            <el-input v-if="row.isEdit" v-model="row.editRow.name" size="mini" style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D" />
+            <span v-else style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D">{{ row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="state" align="center" width="200" label="启用">
+        <el-table-column prop="state" align="center" width="200">
           <!-- 自定义列结构 -->
           <template v-slot="{ row }">
             <!-- 开 1 关 0 -->
             <el-switch v-if="row.isEdit" v-model="row.editRow.state" :active-value="1" :inactive-value="0" />
-            <span v-else>  {{ row.state === 1 ? "已启用" : row.state === 0 ? "未启用" : "无" }} </span>
+            <span v-else style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D">  {{ row.state === 1 ? "已启用" : row.state === 0 ? "未启用" : "无" }} </span>
           </template>
         </el-table-column>
-        <el-table-column prop="description" align="center" label="描述">
+        <el-table-column prop="description" align="center" label="描述" class="list-title">
           <template v-slot="{ row }">
-            <el-input v-if="row.isEdit" v-model="row.editRow.description" size="mini" type="textarea" />
-            <span v-else>{{ row.description }}</span>
+            <el-input v-if="row.isEdit" v-model="row.editRow.description" size="mini" type="textarea" style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D" />
+            <span v-else style="background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D" label="启用">{{ row.description }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作">
+        <el-table-column align="center" label="操作" class="list-title">
           <!-- 放置操作按钮 -->
           <template v-slot="{ row }">
             <template v-if="row.isEdit">
@@ -39,26 +39,27 @@
             </template>
             <template v-else>
               <!-- 非编辑状态 -->
-              <el-button size="mini" type="text" @click="btnPermission(row.id)">分配权限</el-button>
-              <el-button size="mini" type="text" @click="btnEditRow(row)">编辑</el-button>
+              <el-button size="mini" type="text" class="operator-button" @click="btnPermission(row.id)">分配权限</el-button>
+              <el-button size="mini" type="text" class="operator-button" @click="btnEditRow(row)">编辑</el-button>
               <el-popconfirm
                 title="这是一段内容确定删除吗？"
                 @onConfirm="confirmDel(row.id)"
               >
-                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text" class="operator-button">删除</el-button>
               </el-popconfirm>
             </template>
           </template>
         </el-table-column>
       </el-table>
       <!-- 放置分页组件 -->
-      <el-row type="flex" style="height:60px" align="middle" justify="end">
+      <el-row type="flex" style="height:60px;background-color:rgb(27,40,56);font-weight:550;color:#7A8B9D" align="middle" justify="end">
         <!-- 放置分页组件 -->
         <el-pagination
           :page-size="pageParams.pagesize"
           :current-page="pageParams.page"
           :total="pageParams.total"
           layout="prev, pager, next"
+          background="rgb(27,40,56)"
           @current-change="changePage"
         />
       </el-row>
@@ -237,7 +238,70 @@ export default {
 }
 </script>
 <style scoped>
+:root {
+  background-color: rgb(27,40,56);
+}
+.container {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  font-weight: 550;
+}
+.app-container {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+}
+.list {
+  background-color: rgb(27,40,56) !important;
+  color: #7A8B9D;
+}
+.list-title {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
 .role-operate {
   padding: 10px;
+  background-color: rgb(27,40,56);
+}
+
+.add-button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+  font-weight: 550 !important;
+}
+.add-button:hover
+{
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+.operator-button {
+  background-color: rgb(27,40,56) !important;
+  font-weight: 550 !important;
+  color: #67C1F5 !important;
+}
+.operator-button:hover {
+  color: #abdcf8 !important;
+}
+
+::v-deep .el-pagination .el-pager li:not(.disabled) {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+
+::v-deep .el-pagination .el-pager li:not(.disabled):hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li.active {
+  background-color: #6f94aa !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
 }
 </style>

@@ -59,8 +59,10 @@ export default {
     position: relative;
     height: 100%;
     width: 100%;
+    background-color: rgb(27,40,56);
     &.mobile.openSidebar{
       position: fixed;
+      border-color: rgba(255, 255, 255, 0);
       top: 0;
     }
   }
@@ -84,10 +86,14 @@ export default {
   }
 
   .hideSidebar .fixed-header {
-    width: calc(100% - 54px)
+    width: calc(100% - 54px);
+    border-color: rgb(27,40,56);
   }
 
   .mobile .fixed-header {
     width: 100%;
+  }
+  .sidebar-container {
+    border-color: rgb(27,40,56);
   }
 </style>

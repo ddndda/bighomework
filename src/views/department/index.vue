@@ -2,7 +2,7 @@
   <div class="container">
     <div class="app-container">
       <!-- 展示树形结构 -->
-      <el-tree :expand-on-click-node="false" default-expand-all :data="depts" :props="defaultProps">
+      <el-tree :expand-on-click-node="false" default-expand-all :data="depts" :props="defaultProps" class="tree">
         <!-- 节点结构 -->
         <!-- v-slot="{ node, data }" 只能作用在template -->
         <template v-slot="{ data }">
@@ -92,13 +92,34 @@ export default {
 }
 </script>
 <style scoped>
+.container {
+  background-color: rgb(27,40,56);
+}
 .app-container {
   padding: 30px 140px;
-  font-size: 14px;
+  font-size: 15px;
+  background-color: rgb(27,40,56);
+}
+.tree {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  font-weight: 550;
+}
+::v-deep .el-tree-node__content:hover {
+  background-color: #4786AA;
+  color: #FCFDFE !important;
 }
 .tree-manager {
   width: 50px;
   display: inline-block;
-  margin: 10px;
+  margin-right: 70px;
+}
+.el-dropdown-link  {
+  color: #7A8B9D;
+  font-weight: 550;
+}
+.el-dropdown-link:hover {
+  background-color: #4786AA;
+  color: #FCFDFE !important;
 }
 </style>

@@ -25,12 +25,12 @@
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button v-permission="'add-employee'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
-          <el-button size="mini" @click="showExcelDialog = true">excel导入</el-button>
-          <el-button size="mini" @click="exportEmployee">excel导出</el-button>
+          <el-button v-permission="'add-employee'" size="mini" type="primary" class="add-button" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button size="mini" class="im-export-button" @click="showExcelDialog = true">excel导入</el-button>
+          <el-button size="mini" class="im-export-button" @click="exportEmployee">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
-        <el-table :data="list">
+        <el-table :data="list" style="background-color:rgb(27,40,56)">
           <el-table-column prop="staffPhoto" align="center" label="头像">
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
@@ -51,13 +51,13 @@
           <el-table-column prop="timeOfEntry" label="入职时间" sortable />
           <el-table-column label="操作" width="280px">
             <template v-slot="{ row }">
-              <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text" @click="btnRole(row.id)">角色</el-button>
+              <el-button size="mini" type="text" class="operator-button" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
+              <el-button size="mini" type="text" class="operator-button" @click="btnRole(row.id)">角色</el-button>
               <el-popconfirm
                 title="确认删除该行数据吗？"
                 @onConfirm="confirmDel(row.id)"
               >
-                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text" class="operator-button">删除</el-button>
               </el-popconfirm>
 
             </template>
@@ -219,13 +219,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+:root {
+  background-color: rgb(27,40,56);
+}
+.container {
+  background-color: rgb(27,40,56);
+}
 .app-container {
-  background: #fff;
+  background: rgb(27,40,56);
   display: flex;
   .left {
     width: 280px;
     padding: 20px;
-    border-right: 1px solid #eaeef4;
+    border-right: 1px;
   }
   .right {
     flex: 1;
@@ -245,6 +251,99 @@ export default {
       display:inline-block;
     }
   }
+}
+
+::v-deep .el-input {
+  background-color:#316282;
+  border-color:#316282;
+  .el-input__inner {
+    background-color:#316282;
+    border-color:#316282;
+    color: #0E1C25;
+  }
+}
+::v-deep .el-tree {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  font-weight: 550;
+}
+::v-deep .el-tree > .el-tree-node.is-root {
+  background-color: rgb(27,40,56);
+}
+::v-deep .el-tree-node__content:hover {
+  background-color: #4786AA;
+  color: #FCFDFE !important;
+}
+::v-deep .el-tree-node.is-current .el-tree-node__content {
+  background-color: #6f94aa;
+  color:#FCFDFE;
+  font-weight: 550;
+}
+
+::v-deep .el-table th,
+::v-deep .el-table td {
+  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
+  color: #7A8B9D;
+  font-weight: 550
+}
+::v-deep .el-table__body-wrapper tbody tr:hover td {
+  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
+}
+::v-deep .el-table__body-wrapper tbody td {
+  color: #7A8B9D; /* 设置表格内容的字体颜色 */
+  font-weight: 550
+}
+.operator-button {
+  background-color: rgb(27,40,56) !important;
+  font-weight: 550 !important;
+  color: #67C1F5 !important;
+}
+.operator-button:hover {
+  color: #abdcf8 !important;
+}
+
+.add-button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+  font-weight: 550 !important;
+  border-color:#274256 !important;
+}
+.add-button:hover
+{
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+.im-export-button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+  font-weight: 550 !important;
+  border-color:#274256;
+}
+.im-export-button:hover
+{
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li:not(.disabled) {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+
+::v-deep .el-pagination .el-pager li:not(.disabled):hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li.active {
+  background-color: #6f94aa !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
 }
 
 </style>

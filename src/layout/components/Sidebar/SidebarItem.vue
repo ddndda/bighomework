@@ -95,3 +95,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.submenu-title-noDropdown {
+  color: #7A8B9D;
+  font-weight: 650;
+}
+</style>

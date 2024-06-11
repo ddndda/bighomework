@@ -147,7 +147,8 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  background: #255291;
+  color: white;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
@@ -206,6 +207,7 @@ export default {
           //  用户名称距离右侧距离
           margin-right: 10px;
           font-size: 16px;
+          color: #7A8B9D;
         }
         .username {
           width: 30px;
@@ -219,12 +221,14 @@ export default {
         }
         .el-icon-setting {
           font-size: 20px;
+          color: #7A8B9D;
         }
         .user-avatar {
           cursor: pointer;
           width: 30px;
           height: 30px;
           border-radius: 50%;
+          margin-right: 10px;
         }
 
         .el-icon-caret-bottom {
