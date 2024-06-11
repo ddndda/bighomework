@@ -42,8 +42,8 @@ export default {
     uploadImage(params) {
       console.log(params.file)
       const cos = new COS({
-        SecretId: 'AKIDLj6M1rcPSYYUH8Ri5IasKj9Ys041FaxQ',
-        SecretKey: 'fIzlR1jZRo9cLDBGE71qZ7hS7kR3c5bw'
+        SecretId: '',
+        SecretKey: ''
       }) // 完成cos对象的初始化
       cos.putObject({
         Bucket: 'bighomework-1327166376', // 存储桶名称
