@@ -285,7 +285,7 @@ export default {
 
 <style scoped lang="scss">
 .dashboard {
-  background: #f5f6f8;
+  background: rgb(27,40,56);
   width: 100%;
   min-height: calc(100vh - 80px);
 
@@ -330,6 +330,7 @@ export default {
  }
   .container {
     display: flex;
+    background-color: rgb(27,40,56);
     .right {
       width: 40%;
       .panel {

@@ -2,7 +2,7 @@
   <div v-loading="loading" class="dashboard-container">
     <div class="app-container">
       <!-- 工具栏 -->
-      <page-tools :show-before="true">
+      <page-tools :show-before="true" class="up-head">
         <template v-slot:before>
           本月{{ tips.dateRange }}：社保在缴 {{ tips.socialSecurityCount }} 公积金在缴 {{ tips.providentFundCount }} 增员 {{ tips.newsCount }} 减员 {{ tips.reducesCount }} 入职 {{ tips.worksCount }} 离职 {{ tips.leavesCount }}
         </template>
@@ -12,7 +12,7 @@
         </template>
       </page-tools>
       <!-- 筛选组件 -->
-      <social-tool />
+      <social-tool class="hr-block" />
       <el-card class="hr-block">
         <el-table :data="list" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
           <el-table-column type="index" width="50" label="序号" />
@@ -42,7 +42,6 @@
           />
         </el-row>
       </el-card>
-
     </div>
   </div>
 </template>
@@ -120,6 +119,19 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+:root {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+}
+.dashboard-container {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
+.app-container {
+  background: rgb(27,40,56);
+  font-weight: 550;
+}
 .cont-bod-box {
   padding: 20px;
   background: #fff;
@@ -127,6 +139,52 @@ export default {
   margin-top: 15px;
   margin-bottom: 15px;
   border: 1px solid #ebeef5;
+}
+.up-head {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+
+.hr-block {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+::v-deep .el-table th,
+::v-deep .el-table td {
+  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
+  color: #7A8B9D;
+  font-weight: 550
+}
+::v-deep .el-table__body-wrapper tbody tr:hover td {
+  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
+}
+::v-deep .el-table__body-wrapper tbody td {
+  color: #7A8B9D; /* 设置表格内容的字体颜色 */
+  font-weight: 550
+}
+
+::v-deep .el-pagination .el-pager li:not(.disabled) {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+::v-deep .el-pagination .el-pager li:not(.disabled):hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li.active {
+  background-color: #6f94aa !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
 }
 
 </style>

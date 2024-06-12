@@ -7,9 +7,9 @@ export function getAttendancesList(params) {
   })
 }
 // 获取考勤详情
-export function getAtteArchiveDetail(userId, yearMonth) {
+export function getAtteArchiveDetail(data) {
   return request({
-    url: `/attendances/archive/${userId}/${yearMonth}`
+    url: `/attendances/archive/${data.userId}/${data.yearMonth}`
   })
 }
 export function updateAttendance(data) {
@@ -36,7 +36,6 @@ export function importArchive(data) {
   return request({
     url: '/archive/atte/export',
     method: 'post',
-    // responseType: 'blob', // 使用blob接收二进制文件流
     data
   })
 }
@@ -77,34 +76,32 @@ export function reportFormList(params) {
 export function leaveSave(data) {
   return request({
     url: '/cfg/leave',
-    method: 'post',
+    method: 'put',
     data
   })
 }
 // 请假获取
-export function getLeave(departmentId) {
+export function getLeave(data) {
   return request({
     url: '/cfg/leave/list',
-    params: {
-      departmentId
-    }
+    method: 'post',
+    data
   })
 }
 // 扣款设置保存
 export function deductionsSave(data) {
   return request({
     url: '/cfg/deduction',
-    method: 'post',
+    method: 'put',
     data
   })
 }
 // 获取扣款设置
-export function getDeductions(departmentId) {
+export function getDeductions(data) {
   return request({
     url: '/cfg/ded/list',
-    params: {
-      departmentId
-    }
+    method: 'post',
+    data
   })
 }
 
@@ -118,12 +115,11 @@ export function overtimeSave(data) {
 }
 
 // 获取加班配置
-export function getOvertime(departmentId) {
+export function getOvertime(data) {
   return request({
     url: '/cfg/extDuty/item',
-    params: {
-      departmentId
-    }
+    method: 'post',
+    data
   })
 }
 // 考勤数据保存
@@ -135,21 +131,11 @@ export function attendanceSave(data) {
   })
 }
 // 考勤数据保存
-export function getAttendance(departmentId) {
+export function getAttendance(data) {
   return request({
     url: '/cfg/atte/item',
-    params: {
-      departmentId
-    }
-  })
-}
-// 获取员工考勤状态
-export function getUserAttStatus(userId) {
-  return request({
-    url: '/attendances/adtStatu/list',
-    params: {
-      userId
-    }
+    method: 'post',
+    data
   })
 }
 export function fileUpdate(data) {
@@ -157,16 +143,5 @@ export function fileUpdate(data) {
     url: `/employee/archives/${data.month}`,
     method: 'put',
     data
-  })
-}
-
-// 导出历史考勤月份报告
-export function exportHistoricalExcel(yearMonth, opType) {
-  return request({
-    url: `/attendances/historys/${yearMonth}/export`,
-    params: {
-      opType
-    },
-    responseType: 'blob'
   })
 }

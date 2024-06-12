@@ -8,9 +8,9 @@
         <el-table-column prop="description" label="描述" />
         <el-table-column label="操作">
           <template v-slot="{ row }">
-            <el-button v-if="row.type === 1" size="mini" type="text">添加</el-button>
-            <el-button type="text" size="mini" @click="editPermission(row.id)">编辑</el-button>
-            <el-button type="text" size="mini" @click="delPermission(row.id)"> 删除</el-button>
+            <el-button v-if="row.type === 1" size="mini" type="text" class="operator-button">添加</el-button>
+            <el-button type="text" size="mini" class="operator-button" @click="editPermission(row.id)">编辑</el-button>
+            <el-button type="text" size="mini" class="operator-button" @click="delPermission(row.id)"> 删除</el-button>
           </template>
 
         </el-table-column>
@@ -130,9 +130,53 @@ export default {
 
 }
 </script>
-<style>
+<style scoped>
+:root {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+}
+.container {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
+.app-container {
+  background: rgb(27,40,56);
+  font-weight: 550;
+}
+
+::v-deep .el-table th,
+::v-deep .el-table td {
+  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
+  color: #7A8B9D;
+  font-weight: 550
+}
+::v-deep .el-table__body-wrapper tbody tr:hover td {
+  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
+}
+::v-deep .el-table__body-wrapper tbody td {
+  color: #7A8B9D; /* 设置表格内容的字体颜色 */
+  font-weight: 550
+}
+
 .btn-add {
   margin: 10px;
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+  font-weight: 550 !important;
+  border-color:#274256 !important;
+}
+.btn-add:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+
+.operator-button {
+  font-weight: 550 !important;
+  color: #67C1F5 !important;
+}
+.operator-button:hover {
+  color: #abdcf8 !important;
 }
 </style>
 <!-- 测试提交 -->
