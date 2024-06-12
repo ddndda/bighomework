@@ -11,31 +11,39 @@
           {{ user.departmentName }}
         </p><p>
           <span>入职时间：</span>
-          {{ user.timeOfEntry | formatDate }}
+          {{ user.timeOfEntry }}
         </p>
       </div>
     </div>
     <div>
       <el-form :model="ruleForm" label-width="110px" class="demo-ruleForm">
-        <el-form-item label="调整基本工资">
-          <el-input v-model="userSalary.currentBasicSalary" style="width: 220px;" :disabled="true" />
-          <span class="Label">-></span>
-          <el-input
-            v-model="ruleForm.currentBasicSalary"
-            style="width: 220px;"
-            placeholder="请输入调整后基本工资"
-            type="number"
-          />
+        <el-form-item label="调整基本工资" required>
+          <el-row>
+            <el-input v-model="userSalary.currentBasicSalary" style="width: 220px;" :disabled="true" />
+            <span class="Label">-></span>
+            <el-form-item ref="formItem1" class="my-inline-form-item" :rules="[{required:true,message:'请输入调整后基本工资'}]" prop="currentBasicSalary">
+              <el-input
+                v-model="ruleForm.currentBasicSalary"
+                style="width: 220px;"
+                placeholder="请输入调整后基本工资"
+                type="number"
+              />
+            </el-form-item>
+          </el-row>
+
         </el-form-item>
-        <el-form-item label="调整岗位工资">
+        <el-form-item label="调整岗位工资" required>
           <el-input v-model="userSalary.currentPostWage" style="width: 220px;" :disabled="true" />
           <span class="Label">-></span>
-          <el-input
-            v-model="ruleForm.currentPostWage"
-            style="width: 220px;"
-            placeholder="请输入调整后岗位工资"
-            type="number"
-          />
+          <el-form-item ref="formItem2" class="my-inline-form-item" :rules="[{required:true,message:'请输入调整后岗位工资'}]" prop="currentPostWage">
+            <el-input
+              v-model="ruleForm.currentPostWage"
+              style="width: 220px;"
+              placeholder="请输入调整后岗位工资"
+              type="number"
+            />
+          </el-form-item>
+
         </el-form-item>
         <el-form-item label="工资合计">
           <el-input v-model="computeCurrentTotal" style="width: 220px;" :disabled="true" />
@@ -57,12 +65,19 @@
 </template>
 
 <script>
-import { getUserDetailById } from '@/api/user'
-import { changeSalary } from '@/api/salary'
+import { changeSalary, getSalaryDetail } from '@/api/salary'
 
 export default {
   name: 'UsersTableIndex',
-  props: ['userSalary', 'userId'],
+  props: {
+    userSalary: {
+      type: Object,
+      default: () => ({})
+    },
+    userId: {
+      type: Number,
+      default: NaN
+    }},
 
   data() {
     return {
@@ -102,20 +117,27 @@ export default {
     this.getUserDetailById()
   },
   methods: {
-    async  onSubmit() {
-      const sendData = this.ruleForm
-      sendData.userId = this.userId
-      await changeSalary(sendData)
-      this.$message({ message: '保存成功', type: 'success' })
-      this.$emit('success')
-      this.onClose()
+    async onSubmit() {
+      await this.$refs.formItem1.validate()
+      await this.$refs.formItem2.validate()
+      if (this.ruleForm.currentPostWage && this.ruleForm.currentBasicSalary) {
+        const sendData = this.ruleForm
+        sendData.userId = this.userId
+        await changeSalary(sendData)
+        this.$message({ message: '保存成功', type: 'success' })
+        this.$emit('editSuccess')
+        this.onClose()
+      }
     },
     onClose() {
       this.ruleForm = {}
       this.$emit('onDialogCancel')
+      this.$refs.formItem1.resetField()
+      this.$refs.formItem2.resetField()
     },
     async getUserDetailById() {
-      this.user = await getUserDetailById(this.userId)
+      const res = await getSalaryDetail(this.userId)
+      this.user = res
     }
   }
 }
@@ -160,6 +182,11 @@ export default {
       .Label{
         margin: 0 20px;
         color:#999;
+
       }
+
+      .my-inline-form-item {
+          display: inline-block;
+        }
     }
   </style>

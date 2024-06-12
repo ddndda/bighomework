@@ -1,10 +1,9 @@
 import request from '@/utils/request'
 
-export function getSalarysList(data) {
+export function getSalarysList(params) {
   return request({
     url: '/salarys/list',
-    data,
-    method: 'post'
+    params
   })
 }
 /**
@@ -95,5 +94,25 @@ export function getArchivingArchive(data) {
     url: `/salarys/reports/${data.yearMonth}/archive`,
     data,
     method: 'post'
+  })
+}
+
+export function getUserSocialData(userId, yearMonth) {
+  return request({
+    url: `/social_securitys/historys/archiveDetail/${userId}/${yearMonth}`
+  })
+}
+
+export function salaryArchive(yearMonth) {
+  return request({
+    url: `/salarys/historys/${yearMonth}/archive`,
+    method: 'post'
+  })
+}
+
+export function salaryExcelExport(yearMonth) {
+  return request({
+    url: `/salarys/historys/${yearMonth}/export`,
+    responseType: 'blob'
   })
 }

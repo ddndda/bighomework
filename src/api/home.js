@@ -19,3 +19,13 @@ export function getMessageList() {
     url: '/home/notice'
   })
 }
+
+/**
+ * 重置数据接口
+ * ***/
+
+export function resetData() {
+  return request({
+    url: '/reset'
+  })
+}

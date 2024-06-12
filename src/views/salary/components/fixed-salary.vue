@@ -1,7 +1,7 @@
 <template>
   <div class="fixedDalary">
-    <el-form :label-position="labelPosition" label-width="120px" :model="formLabelAlign">
-      <el-form-item label="当前基本工资">
+    <el-form ref="form" :label-position="labelPosition" label-width="120px" :model="formLabelAlign" :rules="rules">
+      <el-form-item label="当前基本工资" prop="currentBasicSalary">
         <el-input
           v-model="formLabelAlign.currentBasicSalary"
           placeholder="当前基本工资"
@@ -9,13 +9,13 @@
           type="number"
         />
       </el-form-item>
-      <el-form-item label="当前岗位工资">
+      <el-form-item label="当前岗位工资" prop="currentPostWage">
         <el-input v-model="formLabelAlign.currentPostWage" placeholder="当前岗位工资" style="width: 60%" type="number" />
       </el-form-item>
       <el-form-item label="当前工资合计">
         <el-input v-model="computeCurrentTotal" placeholder="当前工资合计, 自动计算" style="width: 60%" :disabled="true" />
       </el-form-item>
-      <el-form-item label="转正基本工资">
+      <el-form-item label="转正基本工资" prop="correctionOfBasicWages">
         <el-input
           v-model="formLabelAlign.correctionOfBasicWages"
           placeholder="转正基本工资"
@@ -23,7 +23,7 @@
           type="number"
         />
       </el-form-item>
-      <el-form-item label="转正岗位工资">
+      <el-form-item label="转正岗位工资" prop="turnToPostWages">
         <el-input v-model="formLabelAlign.turnToPostWages" placeholder="转正岗位工资" style="width: 60%" type="number" />
       </el-form-item>
       <el-form-item label="转正工资合计">
@@ -42,14 +42,47 @@ import { initSalary } from '@/api/salary'
 
 export default {
   name: 'UsersTableIndex',
-  props: [
-    'userId'
-  ],
+  props: {
+    userId: {
+      type: Number,
+      default: NaN
+    }
+  },
   data() {
     return {
       labelPosition: 'left',
       formLabelAlign: {},
-      turnTotal: 0
+      turnTotal: 0,
+      rules: {
+        currentBasicSalary: [
+          {
+            required: true,
+            message: '请输入当前基本工资',
+            trigger: 'blur'
+          }
+        ],
+        currentPostWage: [
+          {
+            required: true,
+            message: '请输入当前基本工资',
+            trigger: 'blur'
+          }
+        ],
+        correctionOfBasicWages: [
+          {
+            required: true,
+            message: '请输入当前基本工资',
+            trigger: 'blur'
+          }
+        ],
+        turnToPostWages: [
+          {
+            required: true,
+            message: '请输入当前基本工资',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   computed: {
@@ -78,16 +111,22 @@ export default {
   },
   methods: {
     async onSubmit() {
-      this.formLabelAlign.userId = this.userId
-      const sendData = this.formLabelAlign
-      await initSalary(sendData)
-      this.$message.success('定薪成功')
-      this.$emit('success')
-      this.onClose()
+      try {
+        await this.$refs.form.validate()
+        this.formLabelAlign.userId = this.userId
+        const sendData = this.formLabelAlign
+        await initSalary(sendData)
+        this.$message.success('定薪成功')
+        this.$emit('editSuccess')
+        this.onClose()
+      } catch (error) {
+        console.log(error)
+      }
     },
     onClose() {
       this.formLabelAlign = {}
       this.$emit('onDialogCancel')
+      this.$refs.form.resetFields()
     }
   }
 }

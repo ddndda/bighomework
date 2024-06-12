@@ -3,7 +3,6 @@ import request from '@/utils/request'
 export function getApprovalList(data) {
   return request({
     url: `/user/process/instance/${data.page}/${data.pageSize}`,
-    method: 'put',
     data
   })
 }
@@ -48,7 +47,7 @@ export function getApprovalsDetail(id) {
 // 获取流程详情
 export function getApprovalsTaskDetail(id) {
   return request({
-    url: `/user/process/instance/tasks/${id}`
+    url: `/user/process/instance/tasks/detail/${id}`
   })
 }
 // 下载图片

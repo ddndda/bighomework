@@ -82,6 +82,7 @@ export default {
 
   <style rel="stylesheet/scss" lang="scss" scoped>
   .cont-top-box {
+    margin: 0 10px;
     padding: 20px;
     background: #fff;
     border-radius: 3px;

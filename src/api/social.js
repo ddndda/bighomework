@@ -3,7 +3,9 @@ import request from '@/utils/request'
 export function getArchivingCont(params) {
   return request({
     url: `/social_securitys/historys/${params.month}`,
-    params
+    params: {
+      opType: params.opType
+    }
   })
 }
 
@@ -26,10 +28,13 @@ export function getHistorysData(data) {
     data
   })
 }
-export function getArchivingExport(data) {
+export function getArchivingExport({ yearMonth, opType }) {
   return request({
-    url: `/social_securitys/historys/${data.yearMonth}/export`,
-    data
+    url: `/social_securitys/historys/${yearMonth}/export`,
+    responseType: 'blob', // 使用blob接收二进制文件流
+    params: {
+      opType
+    }
   })
 }
 export function getArchivingFirst(data) {
@@ -85,5 +90,12 @@ export function saveSettings(data) {
     url: '/social_securitys/settings',
     data,
     method: 'post'
+  })
+}
+
+// 获取社保城市
+export function getSocialCities() {
+  return request({
+    url: '/sys/city'
   })
 }
