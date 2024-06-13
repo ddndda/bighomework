@@ -2,12 +2,12 @@
   <div class="dashboard-container">
     <div class="app-container">
       <!-- 工具栏 -->
-      <page-tools :show-before="true">
+      <page-tools :show-before="true" class="up-head">
         <!-- 前面内容 -->
 
         <template v-slot:before>
-          <el-button size="mini" type="danger" @click="$router.push('/salary/setting')">设置</el-button>
-          <el-button size="mini" type="primary" @click="$router.push(`/salary/report/${yearMonth}`)">
+          <el-button size="mini" type="danger" class="btn-red" @click="$router.push('/salary/setting')">设置</el-button>
+          <el-button size="mini" type="primary" class="btn-blue" @click="$router.push(`/salary/report/${yearMonth}`)">
             {{ yearMonth }}报表
           </el-button>
         </template>
@@ -65,15 +65,17 @@
                 v-if="scope.row.currentBasicSalary + scope.row.currentPostWage > 0 "
                 size="mini"
                 type="primary"
+                class="btn-gray"
                 @click="changeSalary('ChangeSalary',scope.row.id)"
               >调薪</el-button>
               <el-button
                 v-else
                 size="mini"
                 type="danger"
+                class="btn-red"
                 @click="fixedSalary('FixedSalary',scope.row.id)"
               >定薪</el-button>
-              <el-button size="mini">
+              <el-button size="mini" class="btn-blue">
                 <router-link :to="{'path': `salary/detail/${scope.row.id}/${yearMonth}`}">查看</router-link>
               </el-button>
             </template>
@@ -229,4 +231,103 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+:root {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+}
+.dashboard-container {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
+.app-container {
+  background: rgb(27,40,56);
+  font-weight: 550;
+}
+.up-head {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+.hr-block {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+.custom-form-label .el-form-item__label {
+  color: #7A8B9D;
+  font-weight: 550;
+}
+/* 设置复选框文字颜色 */
+.custom-form-label .el-checkbox__label {
+  color: #7A8B9D;
+  font-weight: 550;
+}
+.btn-blue {
+  margin: 10px;
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+  font-weight: 550 !important;
+  border-color:#274256 !important;
+}
+.btn-blue:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+.btn-gray {
+  margin: 10px;
+  background-color: #6C959F !important;
+  color: #FCFDFE !important;
+  font-weight: 550 !important;
+  border-color:#274256 !important;
+}
+.btn-gray:hover {
+  background-color: #b2c2c6 !important;
+  color: #1f0202 !important;
+}
+.btn-red {
+  margin: 10px;
+  background-color: #5f0303 !important;
+  color: #FCFDFE !important;
+  font-weight: 550 !important;
+  border-color:#274256 !important;
+}
+.btn-red:hover {
+  background-color: #980c0c !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-table th,
+::v-deep .el-table td {
+  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
+  color: #7A8B9D;
+  font-weight: 550
+}
+::v-deep .el-table__body-wrapper tbody tr:hover td {
+  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
+}
+::v-deep .el-table__body-wrapper tbody td {
+  color: #7A8B9D; /* 设置表格内容的字体颜色 */
+  font-weight: 550
+}
+::v-deep .el-pagination .el-pager li:not(.disabled) {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+::v-deep .el-pagination .el-pager li:not(.disabled):hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li.active {
+  background-color: #6f94aa !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
 </style>

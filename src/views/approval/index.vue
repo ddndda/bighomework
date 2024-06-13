@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="app-container">
       <!-- 工具栏 -->
-      <page-tools :show-before="true">
+      <page-tools :show-before="true" class="up-head">
         <!-- 前面内容 -->
         <template v-slot:before>
           <div class="before-box">
@@ -139,11 +139,70 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+:root {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+}
 .before-box {
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 40px;
   text-align: center;
+  background-color: rgb(27,40,56);
+  color: #DCDEDF;
+  font-weight: 600;
+  border-color: rgb(27,40,56);
+}
+.container {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
+.app-container {
+  background: rgb(27,40,56);
+  font-weight: 550;
+}
+.up-head {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+.hr-block {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
+::v-deep .el-table th,
+::v-deep .el-table td {
+  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
+  color: #7A8B9D;
+  font-weight: 550
+}
+::v-deep .el-table__body-wrapper tbody tr:hover td {
+  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
+}
+::v-deep .el-table__body-wrapper tbody td {
+  color: #7A8B9D; /* 设置表格内容的字体颜色 */
+  font-weight: 550
+}
+::v-deep .el-pagination .el-pager li:not(.disabled) {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+::v-deep .el-pagination .el-pager li:not(.disabled):hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li.active {
+  background-color: #6f94aa !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
 }
 </style>
-

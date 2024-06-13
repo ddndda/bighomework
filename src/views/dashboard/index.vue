@@ -469,7 +469,7 @@ export default {
 .dashboard {
   width: 100%;
   min-height: calc(100vh - 80px);
-  background: #f5f6f8;
+  background: rgb(27,40,56);
 
   ::v-deep .el-calendar-day {
     height:  40px;
@@ -533,6 +533,7 @@ export default {
  }
   .container {
     display: flex;
+    background: rgb(27,40,56);
     .right {
       max-width: 600px;
       .right-top-box {

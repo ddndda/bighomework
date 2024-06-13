@@ -2,7 +2,7 @@
   <div v-loading="loading" class="dashboard-container">
     <div class="app-container">
       <!-- 工具栏 -->
-      <page-tools :show-before="true">
+      <page-tools :show-before="true" class="up-head">
         <template v-slot:before>
           <div class="before-box">
             <p>未处理</p>
@@ -11,7 +11,7 @@
         </template>
         <template v-slot:after>
           <!-- <el-button size="mini" type="warning" @click="setRemind">提醒</el-button> -->
-          <el-button size="mini" type="primary" @click="handleSet">设置</el-button>
+          <el-button size="mini" type="primary" class="btn-blue" @click="handleSet">设置</el-button>
         </template>
       </page-tools>
       <!-- 筛选栏 -->
@@ -517,24 +517,26 @@ export default {
   .tableInfo {
     margin: 0;
     line-height: 36px;
-    border: solid 1px #ebeef5;
+    border: solid 1px rgb(27,40,56);
     border-right: 0 none;
     border-bottom: 0 none;
     tr {
       th {
         height: 50px;
         text-align: center;
-        border-right: solid 1px #ebeef5;
-        border-bottom: solid 1px #ebeef5;
-        border-bottom: 2px solid #e8e8e8;
-        background: #fafafa;
+        border-right: solid 1px #FCFDFE;
+        border-bottom: solid 1px #FCFDFE;
+        border-bottom: 2px solid #FCFDFE;
         min-width:  120px;
+        background-color: rgb(27,40,56);
+        color: #7A8B9D;
+       font-weight: 550;
       }
       td {
         height: 36px;
         text-align: center;
-        border-right: solid 1px #ebeef5;
-        border-bottom: solid 1px #ebeef5;
+        border-right: solid 1px #FCFDFE;
+        border-bottom: solid 1px #FCFDFE;
       }
     }
   }
@@ -561,8 +563,88 @@ export default {
 }
 
 .before-box {
-    display: inline-block;
-    margin-right: 10px;
-    text-align: center;
+  display: inline-block;
+  margin-right: 40px;
+  text-align: center;
+  background-color: rgb(27,40,56);
+  color: #DCDEDF;
+  font-weight: 600;
+  border-color: rgb(27,40,56);
+}
+:root {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+}
+.dashboard-container {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+}
+.app-container {
+  background: rgb(27,40,56);
+  font-weight: 550;
+}
+.cont-bod-box {
+  padding: 20px;
+  background: #fff;
+  border-radius: 3px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ebeef5;
+}
+.up-head {
+  background-color: rgb(27,40,56);
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+.hr-block {
+  background-color: rgb(27,40,56);
+  font-weight: 550;
+  color: #7A8B9D;
+  border-color: rgb(27,40,56);
+}
+::v-deep .el-table th,
+::v-deep .el-table td {
+  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
+  color: #7A8B9D;
+  font-weight: 550
+}
+::v-deep .el-table__body-wrapper tbody tr:hover td {
+  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
+}
+::v-deep .el-table__body-wrapper tbody td {
+  color: #7A8B9D; /* 设置表格内容的字体颜色 */
+  font-weight: 550
+}
+::v-deep .el-pagination .el-pager li:not(.disabled) {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+::v-deep .el-pagination .el-pager li:not(.disabled):hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination .el-pager li.active {
+  background-color: #6f94aa !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
+}
+::v-deep .el-pagination button {
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+}
+.btn-blue {
+  margin: 10px;
+  background-color: #274256 !important;
+  color: #67C1F5 !important;
+  font-weight: 550 !important;
+  border-color:#274256 !important;
+}
+.btn-blue:hover {
+  background-color: #4786AA !important;
+  color: #FCFDFE !important;
 }
 </style>
