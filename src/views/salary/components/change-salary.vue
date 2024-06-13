@@ -143,50 +143,50 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  @import '../../../styles/variables.scss';
-    .changeSalary{
-      .infoBox{
-        display: flex;
-        border-bottom: solid 1px #ccc;
-        margin-bottom: 20px;
-        padding: 10px 0 20px 0;
-        img{
-          width: 100px;
-          height: 100px;
-          border-radius: 50%;
-        }
-        .logo{
-          border:solid 1px #ccc;
-          width: 102px;
-          height: 102px;
-          border-radius: 50%;
-          margin-right: 20px;
-        }
-        .info{
-          p{
-            line-height: 30px;
-            .name{font-size: 16px;}
-            span{
-              font-weight: bold;
-              display: inline-block;
-              margin-right: 0px;
-              margin-left: 10px;
-            }
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import '../../../styles/variables.scss';
+  .changeSalary{
+    .infoBox{
+      display: flex;
+      border-bottom: solid 1px #ccc;
+      margin-bottom: 20px;
+      padding: 10px 0 20px 0;
+      img{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+      }
+      .logo{
+        border:solid 1px #ccc;
+        width: 102px;
+        height: 102px;
+        border-radius: 50%;
+        margin-right: 20px;
+      }
+      .info{
+        p{
+          line-height: 30px;
+          .name{font-size: 16px;}
+          span{
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 0px;
+            margin-left: 10px;
           }
         }
-        .buttones{
-          text-align: center;
-        }
       }
-      .Label{
-        margin: 0 20px;
-        color:#999;
-
+      .buttones{
+        text-align: center;
       }
-
-      .my-inline-form-item {
-          display: inline-block;
-        }
     }
-  </style>
+    .Label{
+      margin: 0 20px;
+      color:#999;
+
+    }
+
+    .my-inline-form-item {
+        display: inline-block;
+      }
+  }
+</style>

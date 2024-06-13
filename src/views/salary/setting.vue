@@ -55,7 +55,7 @@
           </el-form-item>
           <el-form-item label="津贴名称" prop="age" class="nameList">
             <p>
-              <el-input placeholder="交通补贴" style="width: 200px;" />
+              <el-input placeholder="交通补贴" style="width: 200px;" disabled />
               <el-select v-model="sendForm.transportationSubsidyScheme" placeholder="请选择">
                 <el-option v-for="item in subsidySchemes" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
@@ -70,7 +70,7 @@
               <el-input v-model="sendForm.transportationSubsidyAmount" placeholder="请输入内容" style="width: 200px;" />
             </p>
             <p>
-              <el-input placeholder="通讯补贴" style="width: 200px;" />
+              <el-input placeholder="通讯补贴" style="width: 200px;" disabled />
               <el-select v-model="sendForm.communicationSubsidyScheme" placeholder="请选择">
                 <el-option v-for="item in subsidySchemes" :key="item.id" :label="item.name" :value="item.id" />
               </el-select>
@@ -189,9 +189,9 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-    .settingContent{
-      padding: 20px;
+<style rel="stylesheet/scss" lang="scss" scoped>
+  .settingContent{
+    padding: 20px;
 
-    }
-  </style>
+  }
+</style>

@@ -1,66 +1,59 @@
 <template>
   <div class="quitApproval">
     <div class="contLeft">
-      <h2>{{ information.user_name }}申请离职</h2>
-      <div class="topTit">
-        <img src="@/assets/common/img.jpeg" alt>
-        <div class="info">
-          <p class="name">
-            <strong>{{ information.username }}</strong>
-          </p>
-          <p>
-            <span>部门：{{ information.departmentName }}</span>
-          </p>
-          <p>
-            <span>入职时间： {{ information.timeOfEntry | formatDate }}</span>
-          </p>
-        </div>
+      <div class="left-title">
+        申请人信息
       </div>
-      <div class="content">
-        <!-- <p v-for="(item, index) in information.body" :key="index"><span>{{item.key}} </span> {{item.val}}</p> -->
-        <p>
-          <span>申请类型：</span>离职
-        </p>
-        <p>
-          <span>期望离职时间：</span>
-          {{ information.data.exceptTime | formatDate }}
-        </p>
-        <p>
-          <span>离职原因：</span>
-          {{ information.data.reason }}
-        </p>
+      <div>
+        <info-item label="姓名" :value="information.username" />
+      </div>
+      <div>
+        <info-item label="部门" :value="information.departmentName" />
+        <info-item label="入职时间" :value="information.timeOfEntry" />
+      </div>
+      <el-divider />
+      <div class="left-title">
+        离职申请
+      </div>
+      <div style="width: 580px;">
+        <info-item label="申请类型" :value="information.processName" />
+        <info-item label="期望离职时间" :value="information.data.exceptTime" />
+        <info-item label="离职原因" :value="information.data.reason" />
       </div>
     </div>
     <div class="contRit">
-      <div class="topTit">
-        <strong>审批记录</strong>
+      <div class="right-title">
+        审批记录
       </div>
-      <div class="Items">
-        <li v-for="(item, index) in taskInstanceOutList" :key="index">
-          <div class="name">
-            <p>{{ item.handleTime | formatDate }}</p>
-            <!-- <p>{{item.description}}</p> -->
-          </div>
-          <div class="act">
-            <strong>{{ item.shouldUserName }}</strong>
-            <span v-if="item.handleType == '3'">审批驳回</span>
-            <span v-else-if="item.handleType == '4'">已撤销</span>
-            <span v-else-if="item.handleType == '1'">未开始</span>
-            <span v-else-if="item.handleType == '2'">审批通过</span>
-            <span v-else>审批中</span>
-          </div>
-        </li>
-        <li />
-      </div>
+      <el-steps direction="vertical" :active="3" finish-status="success" space="85px">
+        <el-step v-for="(item, index) in taskInstanceOutList" :key="index">
+          <template #title>
+            <span class="step-name">
+              {{ item.handleUserName }}
+            </span>
+            <span class="step-type">
+              {{ item.handleOpinion }}
+            </span>
+          </template>
+          <template #description>
+            <span class="step-description">
+              {{ item.handleTime }}
+            </span>
+          </template>
+        </el-step>
+      </el-steps>
     </div>
   </div>
 </template>
 
 <script>
 import { getApprovalsDetail, getApprovalsTaskDetail, downImg } from '@/api/approval'
+import InfoItem from './components/info-item.vue'
 export default {
   name: 'UsersTableIndex',
-
+  components: {
+    InfoItem
+  },
   data() {
     return {
       approvalId: this.$route.params.id,

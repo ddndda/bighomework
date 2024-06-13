@@ -1,43 +1,43 @@
 <template>
   <div class="detailBox">
     <div class="detailTop">
+      <img src="@/assets/common/img.jpeg" width="100" height="100" alt>
       <div>
-        <img src="@/assets/common/img.jpeg" width="100" height="100" alt>
-      </div>
-      <div>
-        <b>{{ sizeForm.user.username }}</b>
-        <span :class="dutyStatus?'job-txt-green':'job-txt-red'">{{ dutyStatusTxt }}</span>
-        <br>
+        <p>
+          <b style="vertical-align: middle;">{{ sizeForm.user.username }}</b>
+          <span :class="dutyStatus?'job-txt-green':'job-txt-red'">{{ dutyStatusTxt }}</span>
+        </p>
         <p>
           <span>最新工资基数 {{ sizeForm.salaryBase }}  </span>
-            &emsp;&emsp;
-          <span>入职时间   {{ sizeForm.user.timeOfEntry | formatDate }}</span>
-            &emsp;&emsp;
+          &emsp;&emsp;
+          <span>入职时间   {{ sizeForm.user.timeOfEntry }}</span>
+          &emsp;&emsp;
           <span>联系电话 {{ sizeForm.user.mobile }}</span>
         </p>
-        <br>
         <p>
           本月不缴纳社保
-          <el-switch v-model="isPaySocialInMonth" active-color="#13ce66" inactive-color="#ff4949" />&emsp;&emsp;
+          <el-switch v-model="isPaySocialInMonth" active-color="#13ce66" inactive-color="#ff4949" :active-value="1" :inactive-value="0" />&emsp;&emsp;
           本月不缴纳公积金
           <el-switch
             v-model="isPayProvidentInMonth"
             active-color="#13ce66"
             inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
           />
         </p>
       </div>
     </div>
     <div class="detailContentBox">
-      <el-form ref="sizeForm.userSocialSecurity" :model="sizeForm.userSocialSecurity" :rules="rules" label-width="100px" size="mini">
+      <el-form ref="form" :model="sizeForm.userSocialSecurity" :rules="rules" label-width="100px" size="mini">
         <el-form-item label="参保城市" prop="participatingInTheCity">
           <el-select
-            v-model="sizeForm.userSocialSecurity.participatingInTheCity"
+            v-model="sizeForm.userSocialSecurity.participatingInTheCityId"
             value-key="id"
             placeholder="请选择参保城市"
             @change="socialSecurityCityChange"
           >
-            <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item" />
+            <el-option v-for="item in cities" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="社保类型" prop="socialSecurityType">
@@ -63,7 +63,7 @@
         <el-form-item label="社保缴纳">
           <el-form-item label="个人" label-width="74px" style="display:inline-block">
             <el-input
-              v-model="personalPayment"
+              v-model="computePersonalPayment"
               style="width:100%"
               placeholder="个人"
               inline="true"
@@ -72,7 +72,7 @@
           </el-form-item>
           <el-form-item label="公司" label-width="74px" style="display:inline-block">
             <el-input
-              v-model="companyPayment"
+              v-model="computeCompanyPament"
               style="width:100%"
               placeholder="企业"
               size="small"
@@ -135,8 +135,8 @@
         </el-form-item>
 
         <el-form-item label="公积金城市" prop="providentFundCity">
-          <el-select v-model="sizeForm.userSocialSecurity.providentFundCity" placeholder="请选择公积金城市" value-key="id">
-            <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item" />
+          <el-select v-model="sizeForm.userSocialSecurity.providentFundCityId" placeholder="请选择公积金城市" value-key="id">
+            <el-option v-for="item in cities" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="公积金基数" prop="providentFundBase">
@@ -161,7 +161,7 @@
         <el-form-item label="公积金缴纳">
           <el-form-item
             label="个人"
-            label-width="50px"
+            label-width="60px"
             style="display:inline-block"
             prop="personalProvidentFundPayment"
           >
@@ -175,7 +175,7 @@
           </el-form-item>
           <el-form-item
             label="公司"
-            label-width="50px"
+            label-width="60px"
             style="display:inline-block"
             prop="enterpriseProvidentFundPayment"
           >
@@ -205,7 +205,7 @@
 
         <el-form-item>
           <el-button type="primary" @click="onSubmit()">保存</el-button>
-          <el-button>取消</el-button>
+          <el-button @click="()=>$router.back()">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -213,7 +213,7 @@
 </template>
 
 <script>
-import { saveContent, getContent, getPaymentItemList } from '@/api/social'
+import { saveContent, getContent, getPaymentItemList, getSocialCities } from '@/api/social'
 
 export default {
   name: 'DetailSocial',
@@ -271,15 +271,14 @@ export default {
           industrialInjuryRatio: 0.2
         }
       },
-      cityList: [],
       paymentItemList: [],
       personalPayment: 0.0,
       companyPayment: 0.0,
-      isPaySocialInMonth: false,
-      isPayProvidentInMonth: false,
+      isPaySocialInMonth: 0,
+      isPayProvidentInMonth: 0,
       rules: {
         participatingInTheCity: [
-          { required: true, message: '请选择参保城市1234', trigger: 'change' }
+          { required: true, message: '请选择参保城市', trigger: 'change' }
         ],
         socialSecurityType: [
           { required: true, message: '请选择社保类型', trigger: 'change' }
@@ -339,7 +338,8 @@ export default {
             trigger: 'change'
           }
         ]
-      }
+      },
+      cities: []
     }
   },
   computed: {
@@ -377,14 +377,20 @@ export default {
     computeEnterpriseProvidentFundPayment() {
       return parseFloat(
         (this.sizeForm.userSocialSecurity.enterpriseProportion * this.sizeForm.userSocialSecurity.providentFundBase) /
-            100
+          100
       ).toFixed(2)
     },
     computePersonalProvidentFundPayment() {
       return parseFloat(
         (this.sizeForm.userSocialSecurity.personalProportion * this.sizeForm.userSocialSecurity.providentFundBase) /
-            100
+          100
       ).toFixed(2)
+    },
+    computePersonalPayment() {
+      return this.computePaymentItemList.reduce((acc, cur) => (acc += parseFloat(cur.personalPay)), 0).toFixed(2)
+    },
+    computeCompanyPament() {
+      return this.computePaymentItemList.reduce((acc, cur) => (acc += parseFloat(cur.companyPay)), 0).toFixed(2)
     }
   },
   watch: {
@@ -396,42 +402,31 @@ export default {
     },
     'sizeForm.userSocialSecurity.personalProportion': function() {
       this.changeProvidentFundPayment()
-    },
-    'sizeForm.userSocialSecurity.enterprisesPaySocialSecurityThisMonth': function() {
-      this.isPaySocialInMonth = this.sizeForm.enterprisesPaySocialSecurityThisMonth === 1
-    },
-    'sizeForm.userSocialSecurity.enterprisesPayTheProvidentFundThisMonth': function() {
-      this.isPayProvidentInMonth = this.sizeForm.enterprisesPayTheProvidentFundThisMonth === 1
     }
   },
   created() {
     this.sizeForm.userId = this.$route.params.id
-    this.getCityList()
     this.getContent()
+    this.getCities()
   },
   methods: {
     onSubmit() {
       this.saveData()
     },
-    socialSecurityCityChange(obj) {
-      this.sizeForm.userSocialSecurity.participatingInTheCity = obj
-      this.initPaymentItem(obj)
+    socialSecurityCityChange(id) {
+      const res = this.cities.find(item => item.id === id)
+      this.initPaymentItem(res)
     },
     async saveData() {
-      this.sizeForm.userSocialSecurity.enterprisesPaySocialSecurityThisMonth = this.isPaySocialInMonth ? 1 : 0
-      this.sizeForm.userSocialSecurity.enterprisesPayTheProvidentFundThisMonth = this.isPayProvidentInMonth ? 1 : 0
+      // 校验
+      await this.$refs.form.validate()
+      this.sizeForm.userSocialSecurity.enterprisesPaySocialSecurityThisMonth = this.isPaySocialInMonth
+      this.sizeForm.userSocialSecurity.enterprisesPayTheProvidentFundThisMonth = this.isPayProvidentInMonth
       this.sizeForm.userSocialSecurity.userId = this.sizeForm.userId
-      var cCity = this.sizeForm.userSocialSecurity.participatingInTheCity
-      var fCity = this.sizeForm.userSocialSecurity.participatingInTheCity
-      this.sizeForm.userSocialSecurity.participatingInTheCity = cCity.name
-      this.sizeForm.userSocialSecurity.participatingInTheCityId = cCity.id
-      this.sizeForm.userSocialSecurity.providentFundCity = fCity.name
-      this.sizeForm.userSocialSecurity.providentFundCityId = fCity.id
+      this.sizeForm.userSocialSecurity.providentFundCity = this.cities.find(item => item.id === this.sizeForm.userSocialSecurity.providentFundCityId).name
+      this.sizeForm.userSocialSecurity.participatingInTheCity = this.cities.find(item => item.id === this.sizeForm.userSocialSecurity.participatingInTheCityId).name
       await saveContent(this.sizeForm.userSocialSecurity)
       this.$message.success('保存成功')
-    },
-    async getCityList() {
-      this.cityList = []
     },
     async getContent() {
       // 城市列表获取
@@ -439,6 +434,8 @@ export default {
       if (data.userSocialSecurity) {
         this.sizeForm = data
         this.sizeForm.userId = this.$route.params.id
+        this.isPaySocialInMonth = data.userSocialSecurity.enterprisesPaySocialSecurityThisMonth
+        this.isPayProvidentInMonth = data.userSocialSecurity.enterprisesPayTheProvidentFundThisMonth
         const city = {}
         city.name = this.sizeForm.userSocialSecurity.participatingInTheCity
         city.id = this.sizeForm.userSocialSecurity.participatingInTheCityId
@@ -453,51 +450,57 @@ export default {
     changeProvidentFundPayment() {
       this.sizeForm.userSocialSecurity.enterpriseProvidentFundPayment = parseFloat(
         (this.sizeForm.userSocialSecurity.enterpriseProportion * this.sizeForm.userSocialSecurity.providentFundBase) /
-            100
+          100
       ).toFixed(2)
       this.sizeForm.userSocialSecurity.personalProvidentFundPayment = parseFloat(
         (this.sizeForm.userSocialSecurity.personalProportion * this.sizeForm.userSocialSecurity.providentFundBase) /
-            100
+          100
       ).toFixed(2)
+    },
+    async getCities() {
+      const res = await getSocialCities()
+      this.cities = res
     }
   }
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  .detailBox {
-    margin: 20px;
-    .detailTop {
-      background: #fff;
-      padding: 15px;
-      display: flex;
-      img {
-        border-radius: 50%;
-        margin-right: 40px;
-        box-shadow: 1px 2px 4px #cccccc;
-      }
-    }
-    .detailContentBox {
-      margin: 15px 0;
-      padding: 15px;
-      background: #fff;
+<style rel="stylesheet/scss" lang="scss" scoped>
+.detailBox {
+  margin: 20px;
+  .detailTop {
+    display: flex;
+    align-items:center;
+    padding: 15px;
+    background: #fff;
+    img {
+      border-radius: 50%;
+      margin-right: 40px;
+      box-shadow: 1px 2px 4px #cccccc;
     }
   }
-  .job-txt-green,
-  .job-txt-red {
-    display: inline-block;
-    padding: 3px;
-    border-radius: 3px;
-    font-size: 12px;
-    color: #fff;
+  .detailContentBox {
+    margin: 15px 0;
+    padding: 15px;
+    background: #fff;
   }
-  .job-txt-green {
-    background: #67c23a;
-    //   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  }
-  .job-txt-red {
-    //   padding: 20px;
-    background: #f56c6c;
-    //   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  }
-  </style>
+}
+.job-txt-green,
+.job-txt-red {
+  margin-left: 5px;
+  display: inline-block;
+  padding: 3px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #fff;
+}
+.job-txt-green {
+  background: #67c23a;
+  //   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+.job-txt-red {
+  //   padding: 20px;
+  background: #f56c6c;
+  //   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+</style>

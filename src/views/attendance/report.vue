@@ -8,7 +8,6 @@
             <span slot="label">考勤统计</span>
             <component :is="allList" :show-height="showHeight" :month="this.$route.params.month" @archivingReportForm="archivingReportForm" />
           </el-tab-pane>
-
         </el-tabs>
       </el-card>
     </div>

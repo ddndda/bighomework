@@ -1,7 +1,8 @@
 <template>
   <div class="add-form">
-    <el-dialog title="设置" :visible.sync="dialogFormVisible">
+    <el-dialog title="设置" :visible.sync="dialogFormVisible" @close="handleClose">
       <el-tabs v-model="activeName" style="margin-left:20px" @tab-click="handleClick">
+        <!-- 出勤设置 -->
         <el-tab-pane label="出勤设置" name="first">
           <el-form
             ref="dataForm"
@@ -22,7 +23,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="出勤时间：" prop="morningStartTime" style="">
+            <el-form-item label="出勤时间：" prop="time">
               <el-time-select
                 v-model="formBase.morningStartTime"
                 :picker-options="{
@@ -32,7 +33,8 @@
                 }"
                 :placeholder="formBase.morningStartTime"
                 class="timePicker"
-              />-
+              />
+              -
               <el-time-select
                 v-model="formBase.morningEndTime"
                 :picker-options="{
@@ -52,7 +54,8 @@
                 }"
                 :placeholder="formBase.afternoonStartTime"
                 class="timePicker"
-              />-
+              />
+              -
               <el-time-select
                 v-model="formBase.afternoonEndTime"
                 :picker-options="{
@@ -70,6 +73,7 @@
             <el-button @click="handleClose">取消</el-button>
           </div>
         </el-tab-pane>
+        <!-- 请假设置 -->
         <el-tab-pane label="请假设置" name="second">
           <el-form
             ref="leaveForm"
@@ -95,14 +99,21 @@
             </el-form-item>
           </el-form>
           <p>假期类型</p>
-          <el-table ref="singleTable" :data="stateData.type" style="width: 100%">
-            <el-table-column prop="name" label="类型" width="200" />
+          <el-table ref="singleTable" :data="holidayList" style="width: 100%">
+            <el-table-column prop="leaveType" label="类型" width="200">
+              <template slot-scope="scope">
+                {{ holidayType[scope.row.leaveType] }}
+                {{ computedHolidayType(scope.row.leaveType) }}
+              </template>
+            </el-table-column>
             <el-table-column label="是否可用">
               <template slot-scope="scope">
                 <el-switch
                   v-model="scope.row.isEnable"
                   active-color="#13ce66"
                   inactive-color="#ff4949"
+                  :active-value="1"
+                  :inactive-value="0"
                 />
               </template>
             </el-table-column>
@@ -120,6 +131,7 @@
             </template>
           </el-alert>
         </el-tab-pane>
+        <!-- 扣款设置 -->
         <el-tab-pane label="扣款设置" name="third">
           <el-form
             ref="deductionsForm"
@@ -144,15 +156,17 @@
               </el-select>
             </el-form-item>
           </el-form>
-          <el-table ref="singleTable" :data="stateData.departmentType" style="width: 100%">
+          <el-table ref="singleTable" :data="stateData" style="width: 100%">
             <el-table-column>
               <template slot-scope="scope">
                 <div>
-                  {{ scope.row.name }}
+                  {{ lateType[scope.row.dedTypeCode] }}
                   <el-switch
                     v-model="scope.row.isEnable"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
+                    :active-value="1"
+                    :inactive-value="0"
                     @change="handleStatus($event,scope.row)"
                   />
                 </div>
@@ -178,7 +192,7 @@
                       <el-input
                         v-model="scope.row.dedAmonutUpperLimit"
                         class="inputInfo"
-                        @input.native="handleInput($event)"
+                        @input.native="handleInput($event,true)"
                       />元
                     </p>
                     <p>
@@ -192,7 +206,7 @@
                       <el-input
                         v-model="scope.row.dedAmonutLowerLimit"
                         class="inputInfo"
-                        @input.native="handleInput($event)"
+                        @input.native="handleInput($event,true)"
                       />元
                     </p>
                   </div>
@@ -207,11 +221,11 @@
                         v-model="scope.row.absenceTimesUpperLimt"
                         class="inputInfo"
                         disabled
-                      />次，每次矿工
+                      />次，每次旷工
                       <el-input
                         v-model="scope.row.absenceDays"
                         class="inputInfo"
-                        @input.native="handleInputPoint($event)"
+                        @input.native="e=>scope.row.absenceDays=e.target.value?.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')"
                       />天
                     </p>
                   </div>
@@ -237,7 +251,7 @@
                       <el-input
                         v-model="scope.row.dedAmonutUpperLimit"
                         class="inputInfo"
-                        @input.native="handleInput($event)"
+                        @input.native="handleInput($event,true)"
                       />元
                     </p>
                     <p>
@@ -246,7 +260,7 @@
                       <el-input
                         v-model="scope.row.dedAmonutLowerLimit"
                         class="inputInfo"
-                        @input.native="handleInput($event)"
+                        @input.native="handleInput($event,true)"
                       />元
                     </p>
                   </div>
@@ -261,18 +275,18 @@
                         v-model="scope.row.absenceTimesUpperLimt"
                         class="inputInfo"
                         disabled
-                      />次，每次矿工
+                      />次，每次旷工
                       <el-input
                         v-model="scope.row.absenceDays"
                         class="inputInfo"
-                        @input.native="handleInputPoint($event)"
+                        @input.native="e=>scope.row.absenceDays=e.target.value?.replace(/^\D*(\d*(?:\.\d{0,1})?).*$/g, '$1')"
                       />天
                     </p>
                   </div>
                 </div>
                 <div v-if="scope.row.dedTypeCode==='53000'" class="attentInfo">
                   <p>
-                    矿工按
+                    旷工按
                     <el-input
                       v-model="scope.row.fineSalaryMultiples"
                       class="inputInfo"
@@ -288,6 +302,7 @@
             <el-button @click="handleClose">取消</el-button>
           </div>
         </el-tab-pane>
+        <!-- 加班设置 -->
         <el-tab-pane label="加班设置" name="fourth">
           <el-form
             ref="overtimeForm"
@@ -295,7 +310,6 @@
             :rules="overtimeRule"
             label-width="110px"
           >
-
             <el-form-item label="部门：" prop="departmentId">
               <el-select
                 v-model="overtimeBase.departmentId"
@@ -313,16 +327,16 @@
             <el-form-item label="加班规则：">
               <div v-for="item in overtimeBase.rules" :key="item.id" class="ruleInfo">
                 <el-row>
-                  <el-col :span="8">
+                  <el-col :span="10">
                     <div class="grid-content bg-purple">
-                      <el-switch v-model="item.isEnable" />
+                      <el-switch v-model="item.isEnable" :active-value="1" :inactive-value="0" />
                       &nbsp;&nbsp;{{ item.rule }}
                     </div>
                   </el-col>
-                  <el-col :span="16">
+                  <el-col :span="14">
                     <div class="grid-content bg-purple-light">
                       <span class="pad">
-                        <el-checkbox v-model="item.isTimeOff">调休假</el-checkbox>
+                        <el-checkbox v-model="item.isTimeOff" :true-label="1" :false-label="0">调休假</el-checkbox>
                       </span>
                       <template>
                         <el-time-select
@@ -333,8 +347,8 @@
                             end: '23:59'
                           }"
                           style="width:100px;"
-                          :disabled="item.isTimeOff===false"
-                        />
+                          :disabled="item.isTimeOff===0"
+                        />&nbsp;
                         <el-time-select
                           v-model="item.ruleEndTime"
                           :picker-options="{
@@ -344,7 +358,7 @@
                             minTime: item.startTime
                           }"
                           style="width:100px;"
-                          :disabled="item.isTimeOff===false"
+                          :disabled="item.isTimeOff===0"
                         />
                       </template>
                     </div>
@@ -353,10 +367,10 @@
               </div>
             </el-form-item>
             <el-form-item label="打卡验证：" prop="isClock">
-              <el-switch v-model="overtimeBase.isClock" />&nbsp;&nbsp;加班需要有打卡记录
+              <el-switch v-model="overtimeBase.isClock" :active-value="1" :inactive-value="0" />&nbsp;&nbsp;加班需要有打卡记录
             </el-form-item>
             <el-form-item label="开启补偿：" prop="isCompensationint">
-              <el-switch v-model="overtimeBase.isCompensationint" />
+              <el-switch v-model="overtimeBase.isCompensationint" :active-value="1" :inactive-value="0" />
             </el-form-item>
             <el-form-item label="调休假设置：" prop="latestEffectDate">
               <div class="ruleInfo">
@@ -366,6 +380,8 @@
                   type="date"
                   placeholder="选择日期"
                   style="width:150px;"
+                  format="MM-dd"
+                  value-format="MM-dd"
                 />
               </div>
             </el-form-item>
@@ -390,24 +406,87 @@
 
 <script>
 import { addEmployee } from '@/api/employee'
-// import { getInteger, getIntegerPoint } from '@/filters'
 import { getDepartment } from '@/api/department'
 import {
   attendanceSave,
   getAttendance,
   leaveSave,
   getLeave,
-  deductionsSave,
   getDeductions,
   overtimeSave,
-  getOvertime
+  getOvertime,
+  deductionsSave
 } from '@/api/attendance'
-import * as commonApi from '@/utils'
+import { Message } from 'element-ui'
+
 export default {
   name: 'Add',
   props: [],
   data() {
     return {
+      lateType: {
+        '51000': '迟到扣款',
+        '52000': '早退扣款',
+        '53000': '旷工扣款'
+      },
+      holidayType: [
+        {
+          id: '60000',
+          name: '年假'
+        },
+        {
+          id: '60100',
+          name: '事假'
+        },
+        {
+          id: '60200',
+          name: '病假'
+        },
+        {
+          id: '60300',
+          name: '婚假'
+        },
+        {
+          id: '60400',
+          name: '丧假'
+        },
+        {
+          id: '60500',
+          name: '产假'
+        },
+        {
+          id: '60600',
+          name: '奖励产假'
+        },
+        {
+          id: '60700',
+          name: '陪产假'
+        },
+        {
+          id: '60800',
+          name: '探亲假'
+        },
+        {
+          id: '60900',
+          name: '工伤假'
+        },
+        {
+          id: '61000',
+          name: '调休假'
+        },
+        {
+          id: '61100',
+          name: '产检假'
+        },
+        {
+          id: '61200',
+          name: '流产假'
+        },
+        {
+          id: '61300',
+          name: '长期病假'
+        }
+      ],
       dialogFormVisible: false,
       isShowSelect: false,
       formOfEmployment: '',
@@ -427,40 +506,34 @@ export default {
       },
       overtimeBase: {
         departmentId: '',
-        isClock: false,
-        isCompensationint: false,
+        isClock: 0,
+        isCompensationint: 0,
         latestEffectDate: '',
         unit: '',
         rules: []
       },
       departmentData: [],
       stateData: [],
+      holidayList: [],
       tylelist: [],
       deductionList: [],
-      oldNum: '',
       rules: {
-        // 表单验证
-        // name: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
         departmentId: [
           { required: true, message: '请选择部门', trigger: 'change' }
         ],
-        morningStartTime: [
-          { required: true, message: '请选择时间', trigger: 'change' }
+        time: [
+          {
+            required: true, message: '请选择时间', trigger: 'change', validator: this.validateTime
+          }
         ]
       },
       overtimeRule: {
         // 表单验证
         unit: [
-          { required: true, message: '调休单位不能为空(', trigger: 'blur' }
+          { required: true, message: '调休单位不能为空', trigger: 'change' }
         ],
         departmentId: [
           { required: true, message: '请选择部门', trigger: 'change' }
-        ],
-        isClock: [
-          { required: true, message: '请选择打卡验证', trigger: 'change' }
-        ],
-        isCompensationint: [
-          { required: true, message: '请选择补偿', trigger: 'change' }
         ],
         latestEffectDate: [
           { required: true, message: '请选择时间', trigger: 'change' }
@@ -469,8 +542,35 @@ export default {
     }
   },
   computed: {
-    inpNum() {
-      return this.oldNum
+    // 根据返回请假类型的编号 获取请假名称
+    computedHolidayType: function() {
+      return function(id) {
+        const res = this.holidayType.find(item => item.id === id)
+        return res?.name
+      }
+    }
+  },
+  watch: {
+    dialogFormVisible: function(newVisible) {
+      if (newVisible) {
+        switch (this.activeName) {
+          case 'first':
+            this.handleChange(this.formBase.departmentId)
+            break
+          case 'second':
+            this.handleChangeLeave(this.leaveBase.departmentId)
+            break
+          case 'third':
+            this.handleChangeDeductions(this.deductionsBase.departmentId)
+            break
+          case 'fourth':
+            this.handleChangeovertime(this.overtimeBase.departmentId)
+            break
+
+          default:
+            break
+        }
+      }
     }
   },
   // 创建完毕状态
@@ -478,13 +578,14 @@ export default {
     this.getDepartment() // 获取部门数据
     this.stateData = []
   },
+
   methods: {
     // 业务方法
     // 获取部门
     async getDepartment() {
       this.departmentData = await getDepartment()
       this.formBase.departmentId = this.leaveBase.departmentId = this.deductionsBase.departmentId = this.overtimeBase.departmentId = this.departmentData[0].id
-      this.handleChange(this.leaveBase.departmentId)
+      this.handleChange(this.formBase.departmentId)
     },
     // 弹层显示
     dialogFormV() {
@@ -494,8 +595,10 @@ export default {
     dialogFormH() {
       this.dialogFormVisible = false
     },
+    // 关闭后清除表单数据、校验
     clearFormDate() {
-      this.formBase = {}
+      this.$refs.dataForm.resetFields()
+      this.$refs.overtimeForm.resetFields()
     },
     // 退出
     handleClose() {
@@ -505,7 +608,6 @@ export default {
     // 界面交互
     // 表单提交
     createData() {
-      this.formBase.formOfEmployment = this.formOfEmployment
       this.$refs.dataForm.validate(async valid => {
         if (valid) {
           await addEmployee(this.formBase)
@@ -516,182 +618,73 @@ export default {
         }
       })
     },
-    // 出勤选择部门
-    async handleChange(val) {
-      this.formBase = await getAttendance({ departmentId: val })
+    // 出勤设置选择部门
+    async handleChange(departmentId) {
+      const res = await getAttendance(departmentId)
+      this.formBase.departmentId = departmentId
+      this.formBase.id = res.id
+      this.formBase.companyId = res.companyId
+      this.formBase.afternoonEndTime = res.afternoonEndTime
+      this.formBase.afternoonStartTime = res.afternoonStartTime
+      this.formBase.morningEndTime = res.morningEndTime
+      this.formBase.morningStartTime = res.morningStartTime
+    },
+    // 出勤配置保存更新
+    async handleAttendance() {
+      try {
+        await this.$refs.dataForm.validate()
+        await attendanceSave(this.formBase)
+        Message.success('出勤时间设置成功!')
+        this.$emit('dataSearch')
+        this.$refs.dataForm.resetFields()
+        this.dialogFormVisible = false
+      } catch (error) {
+        console.log(error)
+      }
     },
     // 请假选择部门
-    async handleChangeLeave(val) {
-      this.leaveBase.departmentId = val
-      this.stateData.type.forEach(item => {
-        item.isEnable = false
-        item.departmentId = val
-      })
-      const res = await getLeave({ departmentId: val })
-      res.forEach(item => {
-        if (item.isEnable === 0) {
-          item.isEnable = true
-        } else {
-          item.isEnable = false
-        }
-        this.stateData.type.forEach(val => {
-          if (val.leaveType === item.leaveType) {
-            val.isEnable = item.isEnable
-          }
-        })
-      })
-    },
-    // 扣款选择部门
-    async  handleChangeDeductions(val) {
-      this.deductionsBase.departmentId = val
-      this.stateData.departmentType.forEach(item => {
-        item.departmentId = val
-        item.isEnable = false
-      })
-      const res = await getDeductions({ departmentId: val }).then(res => {
-
-      })
-      res.forEach(item => {
-        if (item.isEnable === 0) {
-          item.isEnable = true
-        } else {
-          item.isEnable = false
-        }
-        this.stateData.departmentType.forEach(val => {
-          if (val.dedTypeCode === item.dedTypeCode) {
-            val.isEnable = item.isEnable
-          }
-        })
-      })
-    },
-    // 加班选择部门
-    async handleChangeovertime(val) {
-      this.overtimeBase.departmentId = val
-      this.overtimeBase.rules.forEach(item => {
-        item.departmentId = val
-        item.isEnable = item.isTimeOff = false
-        item.ruleEndTime = item.ruleStartTime = ''
-      })
-      this.overtimeBase.latestEffectDate = ''
-      this.overtimeBase.unit = ''
-      this.overtimeBase.isClock = this.overtimeBase.isCompensationint = false
-      const data = await getOvertime({ departmentId: val })
-      if (data.dayOffConfigs !== null || data.extraDutyConfig !== null) {
-        this.overtimeBase.departmentId = data.dayOffConfigs.departmentId
-        this.overtimeBase.latestEffectDate =
-                data.dayOffConfigs.latestEffectDate
-        this.overtimeBase.unit = data.dayOffConfigs.unit
-        this.overtimeBase.isClock = data.extraDutyConfig.isClock
-        this.overtimeBase.isCompensationint =
-                data.extraDutyConfig.isCompensationint
-      }
-      if (this.overtimeBase.isClock === 0) {
-        this.overtimeBase.isClock = true
-      } else {
-        this.overtimeBase.isClock = false
-      }
-      if (this.overtimeBase.isCompensationint === 0) {
-        this.overtimeBase.isClock = true
-      } else {
-        this.overtimeBase.isCompensationint = false
-      }
-      if (data.extraDutyRuleList.length > 0) {
-        data.extraDutyRuleList.forEach(item => {
-          if (item.isEnable === 0) {
-            item.isEnable = true
-          } else {
-            item.isEnable = false
-          }
-          if (item.isTimeOff === 0) {
-            item.isTimeOff = true
-          } else {
-            item.isTimeOff = false
-          }
-        })
-        this.overtimeBase.rules = data.extraDutyRuleList
-      }
-    },
-    // 考勤配置保存更新
-    async  handleAttendance() {
-      this.$refs.dataForm.validate(async valid => {
-        if (valid) {
-          await attendanceSave(this.formBase)
-          this.$emit('dataSearch')
-          this.handleClose()
-        }
-      })
+    async handleChangeLeave(id) {
+      this.leaveBase.departmentId = id
+      const list = await getLeave(id)
+      this.holidayList = list
     },
     // 请假配置保存更新
-    handleLeave() {
-      this.$refs.leaveForm.validate(async valid => {
-        if (valid) {
-          this.tylelist = this.stateData.type
-          this.tylelist.forEach(item => {
-            if (item.isEnable) {
-              item.isEnable = '0'
-            } else {
-              item.isEnable = '1'
-            }
-          })
-          await leaveSave(this.tylelist)
-          this.$emit('dataSearch')
-          this.handleClose()
-        }
-      })
+    async handleLeave() {
+      await this.$refs.leaveForm.validate()
+      await leaveSave(this.holidayList)
+      this.$emit('dataSearch')
+      this.handleClose()
+      Message.success('请假设置保存成功!')
+    },
+    // 扣款选择部门
+    async handleChangeDeductions(id) {
+      const res = await getDeductions(id)
+      this.stateData = res
     },
     // 扣款配置保存更新
-    handleDeductions() {
-      this.$refs.deductionsForm.validate(async valid => {
-        if (valid) {
-          var deductionList = this.stateData.departmentType
-          deductionList.forEach(item => {
-            if (item.isEnable) {
-              item.isEnable = '0'
-            } else {
-              item.isEnable = '1'
-            }
-          })
-          await deductionsSave(deductionList)
-          this.$emit('dataSearch')
-          this.handleClose()
-        }
-      })
+    async handleDeductions() {
+      await this.$refs.deductionsForm.validate()
+      await deductionsSave(this.stateData)
+      this.$emit('dataSearch')
+      this.handleClose()
     },
+    // 加班选择部门
+    async handleChangeovertime(id) {
+      const data = await getOvertime(id)
+      this.overtimeBase.departmentId = id
+      this.overtimeBase.rules = data.extraDutyRuleList
+      this.overtimeBase.latestEffectDate = data.dayOffConfigs.latestEffectDate
+      this.overtimeBase.unit = data.dayOffConfigs.unit
+      this.overtimeBase.isClock = data.extraDutyConfig.isClock
+      this.overtimeBase.isCompensationint = data.extraDutyConfig.isCompensationint
+    },
+
     // 加班配置保存更新
-    handleOvertime() {
-      this.$refs.overtimeForm.validate(async valid => {
-        if (valid) {
-          var deductionList = this.overtimeBase
-          deductionList.latestEffectDate = commonApi.transListToTreeData(
-            deductionList.latestEffectDate
-          )
-          if (deductionList.isClock === true) {
-            deductionList.isClock = '0'
-          } else {
-            deductionList.isClock = '1'
-          }
-          if (deductionList.isCompensationint === true) {
-            deductionList.isCompensationint = '0'
-          } else {
-            deductionList.isCompensationint = '1'
-          }
-          deductionList.rules.forEach(item => {
-            if (item.isEnable === true) {
-              item.isEnable = '0'
-            } else {
-              item.isEnable = '1'
-            }
-            if (item.isTimeOff === true) {
-              item.isTimeOff = '0'
-            } else {
-              item.isTimeOff = '1'
-            }
-          })
-          await overtimeSave(deductionList)
-          this.$emit('dataSearch')
-          this.handleClose()
-        }
-      })
+    async  handleOvertime() {
+      await this.$refs.overtimeForm.validate()
+      await overtimeSave(this.overtimeBase)
+      this.$emit('dataSearch')
+      this.handleClose()
     },
     // 点击设置标签
     handleClick(tab, event) {
@@ -717,14 +710,35 @@ export default {
     typeTip(obj) {
       this.$message.error(obj)
     },
-    // 验证输入正整数
-    handleInput: function(e) {
-
-      // getInteger(e, this.typeTip)
+    testInt(num) {
+      if (!(Number(num) % 1 === 0 && Number(num) !== 0)) {
+        Message.error('请输入正整数!')
+        return false
+      }
+      return true
     },
-    // 获取小数点后1位
-    handleInputPoint(e) {
-      // getIntegerPoint(e)
+    testNum(num) {
+      if (!(Number(num) % 1 === 0)) {
+        Message.error('请输入整数!')
+        return false
+      }
+      return true
+    },
+    // 验证输入正整数
+    handleInput: function(e, canEmpty) {
+      if (canEmpty) {
+        this.testNum(e.target.value)
+      } else {
+        this.testInt(e.target.value)
+      }
+    },
+    // 校验出勤设置中的时间
+    validateTime(_, __, callback) {
+      if (this.formBase.morningStartTime && this.formBase.morningEndTime && this.formBase.afternoonStartTime && this.formBase.afternoonEndTime) {
+        callback()
+      } else {
+        callback(new Error('请选择时间'))
+      }
     },
     //
     handleStatus(e, obj) {
@@ -738,54 +752,68 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss">
-  .inputInfo{width: 50px;}
+<style rel="stylesheet/scss" lang="scss">
+.inputInfo{width: 55px;}
 
-  .attentInfo {
-    p {
-      padding: 3px 0;
-    }
-    .el-input--medium {
-      .el-input__inner {
-        height: 24px;
-        line-height: 24px;
-      }
+.attentInfo {
+  p {
+    padding: 3px 0;
+  }
+  .el-input--medium {
+    .el-input__inner {
+      height: 24px;
+      line-height: 24px;
     }
   }
-  .titmInfo {
-    .el-date-editor--timerange.el-input__inner {
-      width: 280px;
-    }
-    .el-date-editor .el-range-separator {
-      padding: 0 15px 0 0;
-    }
+}
+.titmInfo {
+  .timePicker {
+    margin-bottom: 20px;
   }
-  .ruleInfo {
-    .el-input--medium .el-input__inner {
-      height: 30px;
-      line-height: 30px;
-    }
+  .el-date-editor--timerange.el-input__inner {
+    width: 280px;
   }
-  </style>
-
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  .tipInfo {
-    p {
-      padding: 5px 0;
-    }
+  .el-date-editor .el-range-separator {
+    padding: 0 15px 0 0;
   }
-  .titInfo {
-    border-bottom: 1px solid #dcdfe6;
+}
+.ruleInfo {
+  .el-input--medium .el-input__inner {
     height: 30px;
     line-height: 30px;
-    padding: 0 0 15px;
   }
-  .attentInfo {
-    padding: 30px 15px 15px 80px;
+}
+</style>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+::v-deep .el-dialog {
+  min-width: 770px;
+}
+::v-deep .el-date-picker__header {
+  display: none;
+}
+.tipInfo {
+  p {
+    padding: 5px 0;
   }
-  .ruleInfo {
-    .pad {
-      padding-left: 80px;
-    }
+}
+.titInfo {
+  border-bottom: 1px solid #dcdfe6;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 0 15px;
+}
+.attentInfo {
+  padding: 30px 15px 15px 80px;
+  .deductionInfo {
+    margin-left: 100px;
   }
-  </style>
+}
+.ruleInfo {
+  margin-bottom: 5px;
+  .pad {
+    margin-right: 10px;
+    padding-left: 30px;
+  }
+}
+</style>

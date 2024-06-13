@@ -13,7 +13,7 @@
             <a
               class="el-button fr el-button--primary el-button--mini"
               title="导出"
-              @click="handleExport()"
+              @click="handleExport"
             >导出</a>
           </div>
         </div>
@@ -41,11 +41,11 @@
       </div>
     </div>
     <el-row type="flex" justify="center" align="middle" style="height:60px">
-      <el-col :span="12">
+      <span>
         <el-button size="small" type="primary" @click="archivingReportForm">归档{{ yearMonth ? yearMonth.substr(4) : '' }}报表</el-button>
         <el-button size="small" type="primary" @click="createReportForm">新建报表</el-button>
         <el-button size="small" @click="$router.back()">取消</el-button>
-      </el-col>
+      </span>
     </el-row>
   </div>
 </template>
@@ -54,8 +54,12 @@
 
 import {
   getArchivingCont,
-  newReport
+  newReport,
+  salaryArchive,
+  salaryExcelExport
 } from '@/api/salary'
+import FileSaver from 'file-saver'
+
 export default {
   name: 'HistoricalArchiving',
   data() {
@@ -63,7 +67,7 @@ export default {
       loading: false,
       num: 0,
       contentData: [],
-      yearMonth: this.$route.query.yearMonth
+      yearMonth: this.$route.params.yearMonth
     }
   },
   created() {
@@ -93,6 +97,7 @@ export default {
     archivingReportForm() {
       this.$confirm('您确认归档当月报表吗？')
         .then(async() => {
+          await salaryArchive(this.yearMonth)
           // await getArchivingArchive({ yearMonth: this.yearMonth })
           this.$message.success('归档成功')
         })
@@ -103,15 +108,12 @@ export default {
       const year = yearMonth.substring(0, 4)
       const month = yearMonth.substring(4)
       this.$confirm(
-        '您将创建 《 ' + year + '年' + month + '月 》 报表').then(() => {
+        '您将创建 《 ' + year + '年' + month + '月 》 报表').then(async() => {
         this.yearMonth = yearMonth
-        this.createNewReport(this.yearMonth)
+        await newReport({ yearMonth: this.yearMonth })
         this.$message.success('新建报表成功')
         this.getArchivingCont()
       })
-    },
-    async createNewReport(yearMonth) {
-      await newReport({ yearMonth })
     },
     getNextMonth() {
       const year = this.yearMonth.substring(0, 4)
@@ -128,147 +130,148 @@ export default {
       const t2 = year2 + month2
       return t2
     },
-    handleExport() {
-
+    async handleExport() {
+      const res = await salaryExcelExport(this.yearMonth)
+      FileSaver.saveAs(res, `${this.yearMonth}工资报表.xlsx`)
     }
   }
 }
 </script>
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  @import "./../../styles/variables.scss";
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import "./../../styles/variables.scss";
 
-  .monthStatementBox {
-    padding: 20px;
-    .monthStatementTop {
-      position: relative;
-      background: #fff;
-      padding: 10px 15px 0 15px;
-      border-bottom: solid 1px #f4f4f4;
-      .title {
-        color: $blue;
-        line-height: 40px;
-        border-bottom: solid 2px $blue;
-        font-size: 18px;
-        font-weight: bold;
-        display: inline-block;
-        padding: 0 25px;
-        .yearChange {
-          position: absolute;
-          top: 5px;
-          right: 10px;
-        }
-      }
-    }
-    .monthStatementTable {
-      background: #fff;
-      .itemTopLab {
-        border-top: solid 1px #f0f0f0;
-        border-bottom: solid 3px #ccc;
-        padding: 15px;
-        div {
-          display: inline-block;
-          padding: 0 50px;
-          border-right: solid 1px #ccc;
-        }
-        div:last-child,
-        div:first-child {
-          border: none;
-        }
-        .lab {
-          position: relative;
-          top: -15px;
-          padding-right: 0;
-          padding-left: 15px;
-        }
-        .labTit {
-          cursor: pointer;
-        }
-        .title {
-          font-size: 16px;
-          margin: 10px 0;
-          span {
-            position: relative;
-            bottom: -2px;
-            font-size: 13px;
-            color: #999;
-            margin-left: 5px;
-          }
-        }
-        .itemTit {
-          color: #999;
-          margin: 8px 0;
-          font-size: 13px;
-        }
-        .itemNum {
-          font-size: 20px;
-          margin: 0;
-        }
-      }
-      .itemDropDown {
-        background: #fff;
-        .topLab {
-          position: relative;
-          padding: 15px;
-          div {
-            display: inline-block;
-            margin: 0 10px;
-            span {
-              display: inline-block;
-              position: relative;
-              top: 2px;
-              margin-right: 5px;
-              width: 15px;
-              height: 15px;
-              background: $cl-1;
-            }
-          }
-          .rightLabBox {
-            position: absolute;
-            right: -10px;
-            top: 10px;
-            div {
-              border: solid 1px $green;
-              color: $green;
-              border-radius: 3px;
-              padding: 4px 10px;
-              font-size: 14px;
-            }
-          }
-        }
-        .act {
-          border-bottom: solid 3px $panGreen;
-          .lab {
-            color: $panGreen;
-          }
-          .labTit {
-            color: $panGreen;
-          }
-        }
-      }
-      .itemes:hover {
-        background: #fafbff;
-      }
-      .itemes .lab:hover {
-        cursor: pointer;
-      }
-    }
-    .butList {
-      border-top: solid 1px #f4f4f4;
-      text-align: center;
-      background: #fff;
-      span {
-        display: inline-block;
-        background: $green;
-        color: #fff;
-        padding: 8px 20px;
-        border-radius: 3px;
-        margin: 10px;
-        cursor: pointer;
-      }
-      .cancel {
-        background: #ccc;
-        color: #666;
+.monthStatementBox {
+  padding: 20px;
+  .monthStatementTop {
+    position: relative;
+    background: #fff;
+    padding: 10px 15px 0 15px;
+    border-bottom: solid 1px #f4f4f4;
+    .title {
+      color: $blue;
+      line-height: 40px;
+      border-bottom: solid 2px $blue;
+      font-size: 18px;
+      font-weight: bold;
+      display: inline-block;
+      padding: 0 25px;
+      .yearChange {
+        position: absolute;
+        top: 5px;
+        right: 10px;
       }
     }
   }
-  </style>
+  .monthStatementTable {
+    background: #fff;
+    .itemTopLab {
+      border-top: solid 1px #f0f0f0;
+      border-bottom: solid 3px #ccc;
+      padding: 15px;
+      div {
+        display: inline-block;
+        padding: 0 50px;
+        border-right: solid 1px #ccc;
+      }
+      div:last-child,
+      div:first-child {
+        border: none;
+      }
+      .lab {
+        position: relative;
+        top: -15px;
+        padding-right: 0;
+        padding-left: 15px;
+      }
+      .labTit {
+        cursor: pointer;
+      }
+      .title {
+        font-size: 16px;
+        margin: 10px 0;
+        span {
+          position: relative;
+          bottom: -2px;
+          font-size: 13px;
+          color: #999;
+          margin-left: 5px;
+        }
+      }
+      .itemTit {
+        color: #999;
+        margin: 8px 0;
+        font-size: 13px;
+      }
+      .itemNum {
+        font-size: 20px;
+        margin: 0;
+      }
+    }
+    .itemDropDown {
+      background: #fff;
+      .topLab {
+        position: relative;
+        padding: 15px;
+        div {
+          display: inline-block;
+          margin: 0 10px;
+          span {
+            display: inline-block;
+            position: relative;
+            top: 2px;
+            margin-right: 5px;
+            width: 15px;
+            height: 15px;
+            background: $cl-1;
+          }
+        }
+        .rightLabBox {
+          position: absolute;
+          right: -10px;
+          top: 10px;
+          div {
+            border: solid 1px $green;
+            color: $green;
+            border-radius: 3px;
+            padding: 4px 10px;
+            font-size: 14px;
+          }
+        }
+      }
+      .act {
+        border-bottom: solid 3px $panGreen;
+        .lab {
+          color: $panGreen;
+        }
+        .labTit {
+          color: $panGreen;
+        }
+      }
+    }
+    .itemes:hover {
+      background: #fafbff;
+    }
+    .itemes .lab:hover {
+      cursor: pointer;
+    }
+  }
+  .butList {
+    border-top: solid 1px #f4f4f4;
+    text-align: center;
+    background: #fff;
+    span {
+      display: inline-block;
+      background: $green;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 3px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    .cancel {
+      background: #ccc;
+      color: #666;
+    }
+  }
+}
+</style>

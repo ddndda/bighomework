@@ -3,16 +3,18 @@
     <div class="app-container">
       <!-- 工具栏 -->
       <page-tools :show-before="true">
-        <!-- 前面内容 -->
-        <template v-slot:before>有 {{ attendInfo.tobeTaskCount }} 条考勤审批尚未处理</template>
-        <template>
-          <el-button size="mini" type="danger" @click="$router.push('/import?type=attendance')">导入</el-button>
-          <el-button size="mini" type="warning">提醒</el-button>
+        <template v-slot:before>
+          <div class="before-box">
+            <p>未处理</p>
+            {{ attendInfo.tobeTaskCount }}
+          </div>
+        </template>
+        <template v-slot:after>
+          <!-- <el-button size="mini" type="warning" @click="setRemind">提醒</el-button> -->
           <el-button size="mini" type="primary" @click="handleSet">设置</el-button>
-          <el-button size="mini" type="default" @click="$router.push('/attendances/archiving/')">历史归档</el-button>
-          <el-button size="mini" type="primary" @click="$router.push({'path':'/attendances/report/'+ yearMonth})">{{ yearMonth }}报表</el-button>
         </template>
       </page-tools>
+      <!-- 筛选栏 -->
       <el-card class="hr-block">
         <el-form ref="formData" :model="formData" label-width="120px" class="formInfo">
           <el-form-item label="部门:">
@@ -20,23 +22,12 @@
               <el-checkbox
                 v-for="item in departments"
                 :key="item.id"
-                :label="item.name"
+                :label="item.id"
+                @change="searchParamsChange"
               >
                 {{ item.name }}
               </el-checkbox>
             </el-checkbox-group>
-          </el-form-item>
-          <el-form-item label="考勤状态：">
-            <el-radio-group v-model="formData.stateID">
-              <el-radio
-                v-for="item in stateData.holidayType"
-                :key="item.id"
-                :label="item.value"
-                :value="item.value"
-              >
-                {{ item.value }}
-              </el-radio>
-            </el-radio-group>
           </el-form-item>
         </el-form>
       </el-card>
@@ -47,76 +38,34 @@
           <div style="width: 3000px;">
             <table border="0" align="center" cellpadding="0" cellspacing="0" class="tableInfo">
               <tr>
-                <th width="50">序号</th>
-                <th width="100">姓名</th>
-                <th width="100">工号</th>
-                <th width="200">部门</th>
-                <th width="100">手机</th>
-                <th v-for="(it, ind) in monthOfReport" :key="ind" width="110">{{ attendInfo.month }}/{{ ind + 1 }}</th>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>工号</th>
+                <th>部门</th>
+                <th>手机</th>
+                <th v-for="(it, ind) in monthOfReport" :key="ind">{{ attendInfo.month }}/{{ ind + 1 }}</th>
               </tr>
               <tr v-for="(item, index) in list" :key="item.id">
-                <td width="50">{{ index }}</td>
-                <td width="100">{{ item.username }}</td>
-                <td width="100">{{ item.workNumber }}</td>
-                <td width="200">{{ item.departmentName }}</td>
-                <td width="100">{{ item.mobile }}</td>
+                <td>{{ index+1+(page.page-1)*page.pagesize }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.workNumber }}</td>
+                <td>{{ item.departmentName }}</td>
+                <td>{{ item.mobile }}</td>
                 <td
                   v-for="(it,ind) in item.attendanceRecord"
                   :key="ind"
-                  width="110"
-                  @click="showChangeDialog(item,ind,it)"
+                  @click="showChangeDialog(item.id,item.departmentId,it.adtStatu,it.day,item.name)"
                 >
-                  <span v-if="it.adtStatu===1">√</span>
-                  <span v-if="it.adtStatu===2">旷工</span>
-                  <span v-if="it.adtStatu===3">迟到</span>
-                  <span v-if="it.adtStatu===4">早退</span>
-                  <span v-if="it.adtStatu===5">外出</span>
-                  <span v-if="it.adtStatu===6">出差</span>
-                  <span v-if="it.adtStatu===7">年假</span>
-                  <span v-if="it.adtStatu===8">事假</span>
-                  <span v-if="it.adtStatu===9">病假</span>
-                  <span v-if="it.adtStatu===10">婚假</span>
-                  <span v-if="it.adtStatu===11">丧假</span>
-                  <span v-if="it.adtStatu===12">产假</span>
-                  <span v-if="it.adtStatu===13">奖励产假</span>
-                  <span v-if="it.adtStatu===14">陪产假</span>
-                  <span v-if="it.adtStatu===15">探亲假</span>
-                  <span v-if="it.adtStatu===16">工伤假</span>
-                  <span v-if="it.adtStatu===17">调休</span>
-                  <span v-if="it.adtStatu===18">产检假</span>
-                  <span v-if="it.adtStatu===19">流产假2</span>
-                  <span v-if="it.adtStatu===20">长期病假</span>
-                  <span v-if="it.adtStatu===21">测试架</span>
-                  <span v-if="it.adtStatu===22">补签</span>
+                  <span v-for="att in attStatus" :key="att.key">
+                    <span v-if="att.key===it?.adtStatu">
+                      {{ att.attName }}
+                    </span>
+                  </span>
                 </td>
               </tr>
             </table>
           </div>
-
         </div>
-        <el-dialog
-          :visible.sync="centerDialogVisible"
-          width="30%"
-          center
-        >
-          <span slot="title" style="color:#fff;">{{ attendInfo.name }} {{ attendInfo.month }}/{{ attendInfo.getDate }}（实际工作日考勤方案）</span>
-          <div class="attenInfo">
-            <p class="colRed">注：统计考勤时，异常状态优先正常状态</p>
-            <p class="check">
-              <el-radio-group v-model="modifyData.adtStatu">
-                <el-radio
-                  v-for="item in stateData.vacationtype"
-                  :key="item.id"
-                  :label="item.id"
-                  :value="item.name"
-                >{{ item.name }}</el-radio>
-              </el-radio-group></p>
-          </div>
-          <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="btnOK">确定</el-button>
-            <el-button @click="centerDialogVisible = false">取消</el-button>
-          </span>
-        </el-dialog>
         <!-- 分页组件 -->
         <el-row type="flex" align="middle" justify="center" style="height: 60px">
           <el-pagination
@@ -129,28 +78,56 @@
         </el-row>
       </el-card>
     </div>
-    <el-card>
-      <!-- 提醒组件 -->
-      <el-dialog
-        title="提醒"
-        :visible.sync="tipsDialogVisible"
-        width="280px"
-        center
-      >
-        <div class="attenInfo">
-          <p>系统将通过邮件与短信的形式，对全体员工中存在旷工的考勤进行提醒，该提醒每月仅可发送 1 次。</p>
-        </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="handleSub">我知道了</el-button>
-          <el-button @click="centerDialogVisible = false">取消</el-button>
-        </span>
-      </el-dialog>
-      <!-- 设置组件 -->
-      <attendance-set ref="set" @handleCloseModal="handleCloseModal" /></el-card></div>
+    <!-- 提醒组件 -->
+    <el-dialog
+      title="提醒"
+      :visible.sync="tipsDialogVisible"
+      width="280px"
+      center
+    >
+      <div class="attenInfo">
+        <p>系统将通过邮件与短信的形式，对全体员工中存在旷工的考勤进行提醒，该提醒每月仅可发送 1 次。</p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleSub">我知道了</el-button>
+        <el-button @click="centerDialogVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
+    <!-- 设置组件弹层 -->
+    <attendance-set ref="set" @handleCloseModal="handleCloseModal" />
+    <!-- 修改员工考勤状态弹层 -->
+    <el-dialog
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span slot="title">
+        {{ attendInfo.name }} {{ attendInfo.month }}/{{ attendInfo.getDate }}（实际工作日考勤方案）
+      </span>
+      <div class="attenInfo">
+        <p class="colRed">注：统计考勤时，异常状态优先正常状态</p>
+        <p class="check">
+          <el-radio-group v-model="modifyData.adtStatu">
+            <el-radio
+              v-for="(item) in userAttState"
+              :key="item.key"
+              :label="item.key"
+            >
+              {{ item.attName }}
+            </el-radio>
+          </el-radio-group>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="btnOK">确定</el-button>
+        <el-button @click="centerDialogVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-import { getAttendancesList } from '@/api/attendance'
+import { getAttendancesList, getUserAttStatus, updateAttendance } from '@/api/attendance'
 import AttendanceSet from './components/attendance-set'
 import { getDepartment } from '@/api/department'
 import pageTools from './components/page-tools.vue'
@@ -160,40 +137,9 @@ export default {
   data() {
     return {
       list: [],
-      selectData: [],
       stateData: {
         // 假期类型
-        holidayType: [{
-          id: '1',
-          value: '正常',
-          isEnable: false
-        },
-        {
-          id: '2',
-          value: '旷工',
-          isEnable: false
-        },
-        {
-          id: '3',
-          value: '事假',
-          isEnable: false
-        },
-        {
-          id: '4',
-          value: '调休',
-          isEnable: false
-        },
-        {
-          id: '5',
-          value: '迟到',
-          isEnable: false
-        },
-        {
-          id: '6',
-          value: '早退',
-          isEnable: false
-        }
-        ],
+
         vacationtype: [{
           id: '1',
           name: '正常'
@@ -414,9 +360,9 @@ export default {
         }
         ]
       },
+      attStatus: [],
+      userAttState: [],
       departments: [],
-      total: 100,
-      attendanceRecord: '',
       monthOfReport: '',
       centerDialogVisible: false,
       tipsDialogVisible: false,
@@ -434,8 +380,7 @@ export default {
       formData: {
         page: 1,
         pagesize: 10,
-        keyword: this.keyword,
-        deptID: [], // 性别
+        deptID: [],
         stateID: ''
       },
       page: {
@@ -443,6 +388,7 @@ export default {
         pagesize: 10,
         total: 0
       },
+      // 修改考勤状态弹层
       modifyData: {
         userId: '',
         day: '',
@@ -452,17 +398,15 @@ export default {
   },
   // 创建完毕状态
   created() {
-    this.getAttendancesList() // 获取考勤列表
+    this.getAttendancesList({ page: this.page.page, pagesize: this.page.pagesize }) // 获取考勤列表
     this.getDepartment() // 获取考勤列表
+    this.getAllAttType()
   },
   methods: {
     // 暂时不处理
     handleSub() {
       this.tipsDialogVisible = false
       this.$message.success('提醒成功')
-    },
-    handleTip() {
-      this.tipsDialogVisible = true
     },
     // 设置
     handleSet() {
@@ -474,52 +418,96 @@ export default {
     },
     // 获取组织列表
     async getDepartment() {
-      this.departments = await getDepartment()
+      const res = await getDepartment()
+      this.departments = res
     },
-
-    // 初始化数据
-    async getAttendancesList() {
+    // 初始化数据list
+    async getAttendancesList(params) {
       this.loading = true
-      const { data, monthOfReport, tobeTaskCount } = await getAttendancesList({ ...this.page })
+      const { data, monthOfReport, tobeTaskCount, yearOfReport } = await getAttendancesList(params)
       this.list = data.rows // 当前记录
       this.page.total = data.total // 总条数
       this.attendInfo.counts = data.total
       this.attendInfo.month = monthOfReport
       this.attendInfo.tobeTaskCount = tobeTaskCount
-
       var date = new Date()
       var year = date.getFullYear()
       const month = monthOfReport
       var d = new Date(year, month, 0) // 获取月份
       this.monthOfReport = d.getDate() // 获取日期
-      this.yearMonth = year + ('' + month < 10 ? '0' + month : month)
+      this.yearMonth = year + ('' + (month < 10 ? '0' + month : month))
       this.month = monthOfReport
+      this.yearMonth = '' + yearOfReport + monthOfReport
       this.loading = false
     },
-    // 确定修改
+    // 获取所有考勤类型
+    async  getAllAttType() {
+      const res = await getUserAttStatus()
+      const newArr = this.formatArr(res)
+      this.attStatus = newArr
+    },
+    // 确定修改user出勤状态
     async  btnOK() {
-      // await updateAttendance(this.modifyData)
+      await updateAttendance(this.modifyData)
       this.$message.success('更新成功')
       this.centerDialogVisible = false
-      this.getAttendancesList() // 成功之后 重新拉取数据
+      this.getAttendancesList({ page: this.page.page, pagesize: this.page.pagesize, deptID: this.formData.deptID.join(), stateID: this.formData.stateID }) // 成功之后 重新拉取数据
     },
     // 页码改变
     pageChange(page) {
       this.page.page = page
-      this.getAttendancesList() // 获取数据
+      this.getAttendancesList({ ...this.page, stateID: this.formData.stateID }) // 获取数据
     },
-    showChangeDialog(item, id, it) {
-      this.modifyData.userId = item.id
-      this.modifyData.day = it.day
-      this.modifyData.departmentId = item.departmentId
-      this.modifyData.adtStatu = it.adtStatu + '' // 数字转成字符串
+    async showChangeDialog(id, departmentId, adtStatu, day, name) {
+      const res = await getUserAttStatus(id)
+      // 数据处理
+      const newArr = this.formatArr(res)
+      this.userAttState = newArr
+      this.modifyData.userId = id
+      this.modifyData.day = day
+      this.modifyData.departmentId = departmentId
+      this.modifyData.adtStatu = adtStatu // 数字转成字符串
 
-      if (it.adtStatu !== '') {
-        this.attendInfo.getDate = parseInt(id + 1)
-        this.attendInfo.getInfo = it.adtStatu
-        this.attendInfo.name = item.name
+      if (adtStatu !== '') {
+        this.attendInfo.getDate = day.slice(-2)
+        this.attendInfo.getInfo = adtStatu
+        this.attendInfo.name = name
         this.centerDialogVisible = true
       }
+    },
+    // 数据处理
+    formatArr(arr) {
+      // 数据处理
+      const newArr = arr.map(item => {
+        return {
+          key: Number(Object.keys(item)[0]),
+          attName: Object.values(item)[0]
+        }
+      })
+      return newArr
+    },
+    // 提醒
+    setRemind() {
+      console.log('提醒')
+      this.$confirm('系统将通过邮件与短信的形式，对全体员工中存在旷工的考勤进行提醒，该提醒每月仅可发送1 次。', '提醒', {
+        confirmButtonText: '我知道了',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '发送成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
+    searchParamsChange() {
+      this.page.page = 1
+      this.getAttendancesList({ ...this.formData, deptID: this.formData.deptID.join() })
     }
   }
 }
@@ -527,6 +515,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   .tableInfo {
+    margin: 0;
     line-height: 36px;
     border: solid 1px #ebeef5;
     border-right: 0 none;
@@ -539,7 +528,7 @@ export default {
         border-bottom: solid 1px #ebeef5;
         border-bottom: 2px solid #e8e8e8;
         background: #fafafa;
-        min-width:  100px;
+        min-width:  120px;
       }
       td {
         height: 36px;
@@ -557,10 +546,23 @@ export default {
     }
     .el-radio {
         display: inline-block;
-        width: 60px;
         padding: 5px 0;
+        width: 60px;
 
     }
   }
+}
+
+.formInfo {
+  .el-radio{
+    height: 30px;
+    line-height: 30px;
+  }
+}
+
+.before-box {
+    display: inline-block;
+    margin-right: 10px;
+    text-align: center;
 }
 </style>

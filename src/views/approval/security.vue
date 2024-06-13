@@ -168,43 +168,43 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  @import "./../../styles/variables";
-  $active: #13ce66;
-  $inactive: #ccc;
-  .securitySetting {
-    padding: 20px;
-    background: #fff;
-    border-radius: 3px;
-    margin: 15px;
-    border: 1px solid #ebeef5;
-    .settingList {
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import "./../../styles/variables";
+$active: #13ce66;
+$inactive: #ccc;
+.securitySetting {
+  padding: 20px;
+  background: #fff;
+  border-radius: 3px;
+  margin: 15px;
+  border: 1px solid #ebeef5;
+  .settingList {
+    margin-bottom: 20px;
+    .title {
+      font-weight: bold;
+      line-height: 40px;
       margin-bottom: 20px;
-      .title {
-        font-weight: bold;
-        line-height: 40px;
-        margin-bottom: 20px;
-        border-bottom: solid 1px #ccc;
+      border-bottom: solid 1px #ccc;
+    }
+    .set {
+      border: solid 1px #ccc;
+      border-radius: 3px;
+      padding: 15px 30px 15px 20px;
+      position: relative;
+      display: inline-block;
+      margin-right: 20px;
+      span:first-child {
+        padding-right: 15px;
+        border-right: solid 1px #ccc;
+        margin-right: 15px;
       }
-      .set {
-        border: solid 1px #ccc;
-        border-radius: 3px;
-        padding: 15px 30px 15px 20px;
-        position: relative;
-        display: inline-block;
-        margin-right: 20px;
-        span:first-child {
-          padding-right: 15px;
-          border-right: solid 1px #ccc;
-          margin-right: 15px;
-        }
-        .el-icon-setting {
-          position: absolute;
-          right: 5px;
-          top: 5px;
-          color: #999;
-        }
+      .el-icon-setting {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        color: #999;
       }
     }
   }
-  </style>
+}
+</style>

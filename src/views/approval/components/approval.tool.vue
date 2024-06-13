@@ -1,14 +1,14 @@
 <template>
   <div class="cont-top-box">
     <!-- <div class="top-lable">
-        <div class="careful-lab"> <i class="el-icon-info" />当前审批中 0 本月审批通过 1 本月审批驳回 0</div>
-        <div class="lable-tit">
-          <el-button type="primary" size="mini">
-            <router-link :to="{'path':'/approvals/securitySetting'}">流程设置</router-link>
+      <div class="careful-lab"> <i class="el-icon-info" />当前审批中 0 本月审批通过 1 本月审批驳回 0</div>
+      <div class="lable-tit">
+        <el-button type="primary" size="mini">
+          <router-link :to="{'path':'/approvals/securitySetting'}">流程设置</router-link>
 
-          </el-button>
-        </div>
-      </div> -->
+        </el-button>
+      </div>
+    </div> -->
     <el-dialog title="导出" width="500px" :visible.sync="exportData">
       <div class="exportTit"> 如果导出每月数据过多，请使用筛选功能后导出 </div>
       <div class="exportCont">
@@ -62,38 +62,38 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  .cont-top-box {
-    padding: 20px;
-    background: #fff;
+<style rel="stylesheet/scss" lang="scss" scoped>
+.cont-top-box {
+  padding: 20px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+.top-lable {
+  position: relative;
+  line-height: 2;
+  a {
+    display: inline-block;
+    padding: 0 10px;
+  }
+  .careful-lab {
+    i {
+      margin-right: 5px;
+      color: #409eff;
+    }
+    display: inline-block;
+    padding: 0px 10px;
     border-radius: 3px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(145, 213, 255, 1);
+    background: rgba(230, 247, 255, 1);
   }
-  .top-lable {
-    position: relative;
-    line-height: 2;
-    a {
-      display: inline-block;
-      padding: 0 10px;
-    }
-    .careful-lab {
-      i {
-        margin-right: 5px;
-        color: #409eff;
-      }
-      display: inline-block;
-      padding: 0px 10px;
-      border-radius: 3px;
-      border: 1px solid rgba(145, 213, 255, 1);
-      background: rgba(230, 247, 255, 1);
-    }
-    .lable-tit {
-      position: absolute;
-      right: 0;
-      top: 0px;
-    }
+  .lable-tit {
+    position: absolute;
+    right: 0;
+    top: 0px;
   }
-  .exportTit {
-    line-height: 50px;
-  }
-  </style>
+}
+.exportTit {
+  line-height: 50px;
+}
+</style>

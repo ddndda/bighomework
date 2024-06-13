@@ -2,17 +2,19 @@
   <div class="dashboard-container">
     <div class="app-container">
       <!-- 工具栏 -->
-      <page-tools :show-before="true" class="up-head">
+      <page-tools :show-before="true">
         <!-- 前面内容 -->
-        <template v-slot:before>{{ tipsInfo }}</template>
-        <template>
-          <el-button size="mini" type="danger" @click="$router.push('/salarys/setting')">设置</el-button>
-          <el-button size="mini" type="primary" @click="$router.push(`/salarys/monthStatement?yearMonth=${yearMonth}`)">{{ yearMonth }}报表</el-button>
+
+        <template v-slot:before>
+          <el-button size="mini" type="danger" @click="$router.push('/salary/setting')">设置</el-button>
+          <el-button size="mini" type="primary" @click="$router.push(`/salary/report/${yearMonth}`)">
+            {{ yearMonth }}报表
+          </el-button>
         </template>
       </page-tools>
       <!-- 条件筛选 -->
       <el-card class="hr-block">
-        <el-form label-width="120px" class="custom-form-label">
+        <el-form label-width="120px">
           <el-form-item label="聘用形式:">
             <el-checkbox-group v-model="formData.approvalsTypeChecks">
               <el-checkbox
@@ -23,7 +25,7 @@
               >{{ item.value }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-form-item label="员工状态:">
+          <!-- <el-form-item label="员工状态:">
             <el-checkbox-group v-model="formData.approvalsStateChecks">
               <el-checkbox
                 v-for="item in approvalsState"
@@ -32,7 +34,7 @@
                 @change="changeParams"
               >{{ item.value }}</el-checkbox>
             </el-checkbox-group>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="部门:">
             <el-checkbox-group v-model="formData.departmentChecks">
               <el-checkbox
@@ -45,21 +47,20 @@
           </el-form-item>
         </el-form>
       </el-card>
+      <!-- 表格展示 -->
       <el-card class="hr-block">
         <el-table :data="list" style="width: 100%">
-          <el-table-column type="index" label="序号" />
-          <el-table-column prop="username" label="姓名" />
-          <el-table-column prop="mobile" label="手机" />
-          <el-table-column prop="workNumber" label="工号" />
+          <el-table-column type="index" label="序号" :index="index=>index+1+page.pageSize*(page.page-1)" />
+          <el-table-column prop="username" label="姓名" width="150" />
+          <el-table-column prop="mobile" label="手机" width="180" />
+          <el-table-column prop="workNumber" label="工号" width="180" />
           <el-table-column prop="formOfEmployment" :formatter="formatEmployment" width="100" label="聘用形式" />
-          <el-table-column prop="departmentName" label="部门" />
-          <el-table-column prop="timeOfEntry" width="130" label="入职时间">
-            <span>{{ new Date("2021-10-22").toLocaleDateString() }}</span>
-          </el-table-column>
-          <el-table-column :formatter="getMoney" label="工资基数" />
-          <el-table-column label="津贴方案" width="100">通用方案</el-table-column>
-          <!-- <el-table-column label="操作" width="260">
-            <template slot-scope="scope" style>
+          <el-table-column prop="departmentName" label="部门" width="180" />
+          <el-table-column prop="timeOfEntry" width="200" label="入职时间" />
+          <el-table-column prop="currentBasicSalary" label="工资基数" />
+          <el-table-column label="津贴方案" width="120" prop="subsidyName" />
+          <el-table-column label="操作" width="260">
+            <template slot-scope="scope">
               <el-button
                 v-if="scope.row.currentBasicSalary + scope.row.currentPostWage > 0 "
                 size="mini"
@@ -72,15 +73,14 @@
                 type="danger"
                 @click="fixedSalary('FixedSalary',scope.row.id)"
               >定薪</el-button>
-              <el-button type="text" size="mini">
-                <router-link :to="{'path': '/salarys/details/'+yearMonth+'/'+scope.row.id}">查看</router-link>
+              <el-button size="mini">
+                <router-link :to="{'path': `salary/detail/${scope.row.id}/${yearMonth}`}">查看</router-link>
               </el-button>
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
         <el-row type="flex" justify="center" style="height: 50px" align="middle">
           <el-pagination
-            background
             layout="prev,pager,next"
             :total="page.total"
             :current-page="page.page"
@@ -91,8 +91,8 @@
         </el-row>
       </el-card>
       <!--查看弹框-->
-      <el-dialog :title="topLabel" :visible.sync="centerDialogVisible" width="50%" left>
-        <component :is="currentComponent" :user-salary="selectedSalaryInfo" :user-id="selectUserId" @onDialogCancel="centerDialogVisible=false" />
+      <el-dialog :title="topLabel" :visible.sync="centerDialogVisible" width="700px" left>
+        <component :is="currentComponent" ref="dialogRef" :user-salary="selectedSalaryInfo" :user-id="selectUserId" @editSuccess="editSuccess" @onDialogCancel="centerDialogVisible=false" />
         <!-- <ChangeSalary v-if="seeState == 'changeSalary'" :user-salary="selectedSalaryInfo" :user-id="selectUserId" @onDialogCancel="centerDialogVisible=false" /> -->
         <!-- <FixedSalary v-if="seeState == 'fixedSalary'" /> -->
       </el-dialog>
@@ -100,12 +100,11 @@
   </div>
 </template>
 <script>
-import { getTips, getSalaryDetail } from '@/api/salary'
+import { getSalarysList, getTips, getSalaryDetail, getCompanySetting } from '@/api/salary'
 import { getDepartment } from '@/api/department'
 import ChangeSalary from './components/change-salary'
 import FixedSalary from './components/fixed-salary'
 import pageTools from './components/page-tools.vue'
-import { getEmployeeList } from '@/api/salary'
 export default {
   name: 'UsersTableIndex',
   components: { ChangeSalary, FixedSalary, pageTools },
@@ -138,7 +137,7 @@ export default {
       subsidyScheme: [],
       list: [],
       departments: [],
-      loading: false,
+      loading: true,
       page: {
         total: 0,
         page: 1,
@@ -148,7 +147,7 @@ export default {
       yearMonth: '',
       formData: {
         approvalsTypeChecks: [],
-        approvalsStateChecks: [],
+        // approvalsStateChecks: [],
         departmentChecks: []
       },
       selectedSalaryInfo: {},
@@ -159,31 +158,37 @@ export default {
   },
   computed: {
     tipsInfo() {
-      // return `本月${this.tips.dateRange}：入职 ${this.tips.worksCount} 离职 ${this.tips.leavesCount} 调薪 ${this.tips.adjustCount} 未定薪 ${this.tips.unGradingCount}`
       return `本月0：入职 0 离职 0 调薪 0 未定薪 0`
     }
   },
+  watch: {
+    centerDialogVisible: function(newVal) {
+      if (!newVal) {
+        this.$refs.dialogRef.onClose()
+      }
+    }
+  },
   created() {
-    this.getEmployeeList() // 获取工资
+    this.getSalarysList() // 获取工资
     this.getDepartment() // 获取组织
+    this.getSalarySetting()
   },
   methods: {
-    getMoney() {
-      return [3000, 5000, 6000, 8000, 10000, 12000, 15000, 16000][Math.floor(Math.random() * 8) ]
-    },
     // 对聘用形式进行文本显示
     formatEmployment(row) {
-      const data = this.approvalsType.find(item => item.id === row.formOfEmployment.toString())
+      const data = this.approvalsType.find(item => item.id === row.formOfEmployment)
       return data ? data.value : '未知'
     },
-    async  getEmployeeList() {
-      // const data = await getCompanySetting()
-      // this.yearMonth = data.dataMonth
-      // this.loading = true
-      const { rows, total } = await getEmployeeList({ ...this.page, ... this.formData })
+    async  getSalarysList() {
+      this.loading = true
+      const { rows, total } = await getSalarysList({ page: this.page.page, pageSize: this.page.pageSize, approvalsTypeChecks: this.formData.approvalsTypeChecks.join(), departmentChecks: this.formData.departmentChecks.join() })
       this.list = rows
       this.page.total = total
       this.loading = false
+    },
+    async  getSalarySetting() {
+      const { dataMonth } = await getCompanySetting()
+      this.yearMonth = dataMonth
     },
     // 获取组织列表
     async  getDepartment() {
@@ -194,8 +199,9 @@ export default {
       this.tips = tipsRes
     },
     changePage(newPage) {
+      console.log(newPage)
       this.page.page = newPage
-      this.getEmployeeList()
+      this.getSalarysList()
     },
     async  changeSalary(key, userId) {
       this.topLabel = '调薪'
@@ -204,91 +210,23 @@ export default {
       this.selectUserId = userId
       this.selectedSalaryInfo = await getSalaryDetail(userId)
     },
-    fixedSalary(key) {
+    fixedSalary(key, userId) {
       this.topLabel = '定薪'
       this.currentComponent = key
       this.centerDialogVisible = true
+      this.selectUserId = userId
+    },
+    editSuccess() {
+      this.getSalarysList()
     },
     // 查询参数发生变化
     changeParams() {
       this.page.page = 1 // 重置第一页
-      this.getEmployeeList() // 重新拉取工资数据
+      this.getSalarysList() // 重新拉取工资数据
     }
   }
 }
 </script>
 
-<style scoped>
-:root {
-  background-color: rgb(27,40,56);
-  color: #7A8B9D;
-}
-.dashboard-container {
-  background-color: rgb(27,40,56);
-  font-weight: 550;
-  color: #7A8B9D;
-}
-.app-container {
-  background: rgb(27,40,56);
-  font-weight: 550;
-}
-
-.up-head {
-  background-color: rgb(27,40,56);
-  color: #7A8B9D;
-  border-color: rgb(27,40,56);
-}
-
-.hr-block {
-  background-color: rgb(27,40,56);
-  font-weight: 550;
-  color: #7A8B9D;
-  border-color: rgb(27,40,56);
-}
-
-.custom-form-label .el-form-item__label {
-  color: #7A8B9D;
-  font-weight: 550;
-}
-
-/* 设置复选框文字颜色 */
-.custom-form-label .el-checkbox__label {
-  color: #7A8B9D;
-  font-weight: 550;
-}
-
-::v-deep .el-table th,
-::v-deep .el-table td {
-  background-color: rgb(27,40,56); /* 设置表头和表格内容的背景颜色 */
-  color: #7A8B9D;
-  font-weight: 550
-}
-::v-deep .el-table__body-wrapper tbody tr:hover td {
-  background-color: rgb(27,40,56); /* 设置鼠标放置时的背景颜色 */
-}
-::v-deep .el-table__body-wrapper tbody td {
-  color: #7A8B9D; /* 设置表格内容的字体颜色 */
-  font-weight: 550
-}
-
-::v-deep .el-pagination .el-pager li:not(.disabled) {
-  background-color: #274256 !important;
-  color: #67C1F5 !important;
-}
-::v-deep .el-pagination .el-pager li:not(.disabled):hover {
-  background-color: #4786AA !important;
-  color: #FCFDFE !important;
-}
-::v-deep .el-pagination .el-pager li.active {
-  background-color: #6f94aa !important;
-  color: #FCFDFE !important;
-}
-::v-deep .el-pagination button:hover {
-  background-color: #4786AA !important;
-  color: #FCFDFE !important;
-}
-::v-deep .el-pagination button {
-  background-color: #274256 !important;
-  color: #67C1F5 !important;
-}
+<style lang="scss" scoped>
 </style>

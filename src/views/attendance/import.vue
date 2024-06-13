@@ -101,41 +101,41 @@ export default {
 }
 </script>
 
-  <style lang="scss" scoped>
-  .title {
-    text-align: center;
-  }
+<style lang="scss" scoped>
+.title {
+  text-align: center;
+}
 
-  .upload-box {
-    display: flex;
-    justify-content: center;
-    margin: 100px 0;
-    .upload-btn {
-      width: 360px;
-      height: 180px;
-      border: 1px dashed #d9d9d9;
-      border-radius: 6px 0 0 6px;
-      .upload-btn-box {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        .el-upload__tip {
-          text-align: center;
-        }
-        .a-btn {
-          color: red;
-        }
+.upload-box {
+  display: flex;
+  justify-content: center;
+  margin: 100px 0;
+  .upload-btn {
+    width: 360px;
+    height: 180px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px 0 0 6px;
+    .upload-btn-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      .el-upload__tip {
+        text-align: center;
+      }
+      .a-btn {
+        color: red;
       }
     }
-    .upload-drag {
-       ::v-deep().el-upload-dragger {
-        border-radius: 0 6px 6px 0;
-        border-left: none;
-      }
-    }
-
   }
-  </style>
+  .upload-drag {
+     ::v-deep().el-upload-dragger {
+      border-radius: 0 6px 6px 0;
+      border-left: none;
+    }
+  }
+
+}
+</style>

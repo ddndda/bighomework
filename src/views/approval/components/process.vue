@@ -124,28 +124,28 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss">
-  .inputText {
-    width: 400px;
-    height: 32px;
-    resize: none;
-    line-height: 22px;
-    overflow: hidden;
-    font-size: 12px;
-    border: 1px solid #dddee1;
-    padding: 4px 7px;
-    border-radius: 5px;
-  }
-  </style>
+<style rel="stylesheet/scss" lang="scss">
+.inputText {
+  width: 400px;
+  height: 32px;
+  resize: none;
+  line-height: 22px;
+  overflow: hidden;
+  font-size: 12px;
+  border: 1px solid #dddee1;
+  padding: 4px 7px;
+  border-radius: 5px;
+}
+</style>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  .setInfo {
-    label {
-      margin-right: 15px;
-      padding: 0;
-    }
+<style rel="stylesheet/scss" lang="scss" scoped>
+.setInfo {
+  label {
+    margin-right: 15px;
+    padding: 0;
   }
-  .el-checkbox + .el-checkbox {
-    margin: 0;
-  }
-  </style>
+}
+.el-checkbox + .el-checkbox {
+  margin: 0;
+}
+</style>

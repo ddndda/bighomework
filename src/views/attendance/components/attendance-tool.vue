@@ -80,50 +80,50 @@ export default {
 }
 </script>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
-  .cont-top-box {
-    margin: 0 10px;
-    padding: 20px;
-    background: #fff;
+<style rel="stylesheet/scss" lang="scss" scoped>
+.cont-top-box {
+  margin: 0 10px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+.top-lable {
+  position: relative;
+  line-height: 2;
+  a {
+    // display: inline-block;
+    margin: 0;
+  }
+  .careful-lab {
+    i {
+      margin-right: 5px;
+      color: #409eff;
+    }
+    display: inline-block;
+    padding: 0px 10px;
     border-radius: 3px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(145, 213, 255, 1);
+    background: rgba(230, 247, 255, 1);
   }
-  .top-lable {
-    position: relative;
-    line-height: 2;
-    a {
-      // display: inline-block;
-      margin: 0;
-    }
-    .careful-lab {
-      i {
-        margin-right: 5px;
-        color: #409eff;
-      }
-      display: inline-block;
-      padding: 0px 10px;
-      border-radius: 3px;
-      border: 1px solid rgba(145, 213, 255, 1);
-      background: rgba(230, 247, 255, 1);
-    }
-    .lable-tit {
-      position: absolute;
-      right: 0;
-      top: 0px;
-    }
+  .lable-tit {
+    position: absolute;
+    right: 0;
+    top: 0px;
   }
-  .serachInput {
-    .el-input--medium {
-      width: 150px;
-    }
+}
+.serachInput {
+  .el-input--medium {
+    width: 150px;
   }
-  .serachInput .el-input--medium .el-input__inner {
-    height: 26px;
-    line-height: 26px;
+}
+.serachInput .el-input--medium .el-input__inner {
+  height: 26px;
+  line-height: 26px;
+}
+.attenInfo {
+  p {
+    line-height: 30px;
   }
-  .attenInfo {
-    p {
-      line-height: 30px;
-    }
-  }
-  </style>
+}
+</style>
