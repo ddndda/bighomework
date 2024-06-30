@@ -34,6 +34,3 @@ npm run build:stage
 npm run build:prod
 ```
 
-## Demo
-
-![demo](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
